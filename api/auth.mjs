@@ -2,6 +2,7 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { getToken } from './internal/token.mjs';
 import { exists, get, remove, set, TvTimeValue } from './internal/db.mjs';
+import { URL } from './internal/url.mjs';
 
 async function fetchFlutterToken() {
     const isFlutterTokenAvailable = await exists(TvTimeValue.FlutterToken);
@@ -74,7 +75,6 @@ export async function login(username, password) {
     }
 
     const flutterToken = await fetchFlutterToken();
-    const AUTH_URL = 'https://auth.tvtime.com/v1/login';
     const payload = {
         username,
         password
@@ -83,7 +83,7 @@ export async function login(username, password) {
     try {
         console.log('Logging in...');
         const response = await axios
-            .post(AUTH_URL, payload, {
+            .post(URL.Post.Login, payload, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${flutterToken}`,

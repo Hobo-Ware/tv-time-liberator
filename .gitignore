@@ -22,3 +22,6 @@ Thumbs.db
 
 # Database
 .db
+
+# Exported files
+.export

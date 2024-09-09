@@ -1,12 +1,11 @@
 import puppeteer from 'puppeteer';
-
-const TV_TIME_URL = 'https://app.tvtime.com/welcome';
+import { URL } from './url.mjs';
 
 export async function getToken() {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     console.log('Navigating to TV Time...');
-    await page.goto(TV_TIME_URL);
+    await page.goto(URL.Browser.Homepage);
 
     console.log('Waiting for token...');
     await page.waitForFunction(() => {
