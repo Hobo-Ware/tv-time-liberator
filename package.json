@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.mjs",
+    "start": "bun run index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -11,7 +11,6 @@
   "description": "",
   "dependencies": {
     "axios": "^1.7.7",
-    "dotenv": "^16.4.5",
     "file-system-db": "^2.1.0",
     "jwt-decode": "^4.0.0",
     "puppeteer": "^23.3.0"

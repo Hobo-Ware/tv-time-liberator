@@ -1,5 +1,3 @@
-import './setup.mjs';
-
 import { EOL } from 'os';
 import { login, followedMovies, followedSeries, infoSeries } from './api/index.mjs';
 import { writeFile } from 'fs/promises';
