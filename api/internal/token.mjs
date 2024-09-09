@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer';
 
 const TV_TIME_URL = 'https://app.tvtime.com/welcome';
 
-async function getToken() {
+export async function getToken() {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     console.log('Navigating to TV Time...');
@@ -27,5 +27,3 @@ async function getToken() {
 
     return localStorage['flutter.jwtToken'].slice(1, -1);
 }
-
-export const TOKEN = await getToken();
