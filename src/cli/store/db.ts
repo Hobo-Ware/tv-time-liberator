@@ -1,6 +1,6 @@
 import { FSDB } from 'file-system-db';
 
-export const db = new FSDB('.db/store.json');
+const db = new FSDB('.db/store.json');
 
 export const TvTimeValue = {
     FlutterToken: 'tv_time.flutter_token',

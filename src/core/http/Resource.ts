@@ -1,4 +1,4 @@
-export const URL = {
+export const Resource = {
     Browser: {
         /**
          * The URL of the TV Time homepage.
@@ -32,7 +32,7 @@ export const URL = {
              * @param {string} seriesId 
              * @returns 
              */
-             Info: (seriesId) => `https://app.tvtime.com/sidecar?o=https://api2.tozelabs.com/v2/show/${seriesId}/extended`,
+            Info: (seriesId) => `https://app.tvtime.com/sidecar?o=https://api2.tozelabs.com/v2/show/${seriesId}/extended`,
         }
     },
 }

@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { getToken } from './internal/token.mjs';
-import { exists, get, remove, set, TvTimeValue } from './internal/db.mjs';
-import { URL } from './internal/url.mjs';
+import { getToken } from './token';
+import { exists, get, remove, set, TvTimeValue } from './store/db';
+import { Resource } from '../core/http/Resource';
+import { UserToken } from '../core/types/UserToken';
 
-async function fetchFlutterToken() {
+async function fetchFlutterToken(): Promise<string> {
     const isFlutterTokenAvailable = await exists(TvTimeValue.FlutterToken);
 
     if (!isFlutterTokenAvailable) {
@@ -21,7 +22,7 @@ async function fetchFlutterToken() {
     }
 
     try {
-        const { exp } = jwtDecode(cachedToken);
+        const { exp = 0 } = jwtDecode(cachedToken);
 
         if (Date.now() >= exp * 1000) {
             console.log('Flutter token expired, regenerating...');
@@ -36,7 +37,7 @@ async function fetchFlutterToken() {
     return cachedToken;
 }
 
-async function fetchUser() {
+async function fetchUser(): Promise<UserToken | null | undefined> {
     const isUserTokenAvailable = await exists(TvTimeValue.UserToken);
 
     if (!isUserTokenAvailable) {
@@ -46,7 +47,7 @@ async function fetchUser() {
     const user = await get(TvTimeValue.UserToken);
 
     try {
-        const { exp } = jwtDecode(user.token);
+        const { exp = 0 } = jwtDecode(user.token);
         const isTokenExpired = Date.now() >= exp * 1000;
 
         if (!isTokenExpired) {
@@ -61,12 +62,9 @@ async function fetchUser() {
 /**
  * Logs in a user with the provided username and password.
  * 
- * @param {string} username - The username of the user.
- * @param {string} password - The password of the user.
- * @returns {Promise<{ userId: string, token: string  }>} - A promise that resolves to the response data from the login request.
  * @throws {Error} - If an error occurs during the login process.
  */
-export async function login(username, password) {
+export async function login(username: string, password: string): Promise<UserToken> {
     const userInfo = await fetchUser();
 
     if (userInfo != null) {
@@ -83,7 +81,7 @@ export async function login(username, password) {
     try {
         console.log('Logging in...');
         const response = await axios
-            .post(URL.Post.Login, payload, {
+            .post(Resource.Post.Login, payload, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${flutterToken}`,
@@ -106,6 +104,7 @@ export async function login(username, password) {
             message: error.message,
             status: error.status,
         });
+        console.error(error);
         return Promise.reject(error);
     }
 }

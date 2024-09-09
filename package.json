@@ -1,9 +1,9 @@
 {
   "name": "tv-time-liberator",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/cli/index.ts",
   "scripts": {
-    "start": "bun run src/extractor/index.mjs",
+    "start": "bun run src/cli/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
