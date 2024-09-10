@@ -1,7 +1,5 @@
-import browser from 'webextension-polyfill';
-
-console.log('Hello from the background!');
-
-browser.runtime.onInstalled.addListener((details) => {
-  console.log('Extension installed:', details);
-});
+function noop() {
+    /**
+     * We do not need to run anything in the background script (yet).
+     */
+}
