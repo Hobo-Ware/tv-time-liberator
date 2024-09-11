@@ -8,7 +8,9 @@
     "axios": "^1.7.7",
     "file-system-db": "^2.1.0",
     "jwt-decode": "^4.0.0",
-    "puppeteer": "^23.3.0"
+    "node-html-parser": "^6.1.13",
+    "puppeteer": "^23.3.0",
+    "ts-retry": "^5.0.1"
   },
   "description": "",
   "license": "ISC",

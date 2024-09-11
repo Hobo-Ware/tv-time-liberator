@@ -9,7 +9,8 @@
     "128": "icon/128.png"
   },
   "host_permissions": [
-    "https://app.tvtime.com/*"
+    "https://app.tvtime.com/*",
+    "https://www.thetvdb.com/*"
   ],
   "content_scripts": [
     {

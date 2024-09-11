@@ -29,10 +29,16 @@ export const Resource = {
         Series: {
             /**
              * 
-             * @param {string} seriesId 
-             * @returns 
+             * @param {string} seriesId
              */
-            Info: (seriesId) => `https://app.tvtime.com/sidecar?o=https://api2.tozelabs.com/v2/show/${seriesId}/extended`,
+            Info: (seriesId) => `https://app.tvtime.com/sidecar?o=https://api2.tozelabs.com/v2/show/${seriesId}/extended&fields=id,is_watched,watched_date,watched_count`,
+        },
+        Episode: {
+            /**
+             * 
+             * @param {string} episodeId 
+             */
+            Info: (episodeId) => `https://app.tvtime.com/sidecar?o=https://api2.tozelabs.com/v2/episode/${episodeId}&fields=id,is_watched,watched_date,watched_count`,
         }
     },
 }

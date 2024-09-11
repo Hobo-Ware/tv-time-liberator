@@ -10,19 +10,25 @@ import { assertDefined } from '../utils/assertDefined';
  */
 export async function followedMovies(userId: string): Promise<Movie[]> {
     const url = Resource.Get.Follows.Movies(userId);
+    const movies = await get<MovieResponse>(url)
+        .then(response => response.data.objects);
 
-    return get<MovieResponse>(url)
-        .then(response => response.data.objects)
-        .then(objects => objects.map(object => ({
-            id: assertDefined(
-                object
-                    .meta
-                    .external_sources
-                    .find(source => source.source === 'tvdb'),
-                'TVDB identifier not found.',
-            )?.id,
+    return movies.map(object => {
+        const id = assertDefined(
+            object
+                .meta
+                .external_sources
+                .find(source => source.source === 'tvdb'),
+            'TVDB identifier not found.',
+        )?.id;
+
+        return {
+            id,
+            uuid: object.uuid,
             title: object.meta.name,
-            watchedOn: object.watched_at,
-            isWatched: object.watched_at != null,
-        })));
+            watched_at: object.watched_at,
+            is_watched: object.watched_at != null,
+            imdb: '-1',
+        };
+    })
 }
