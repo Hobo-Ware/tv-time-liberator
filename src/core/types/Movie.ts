@@ -5,4 +5,5 @@ export type Movie = {
     id: MediaIdentifier;
     uuid: string;
     title: string;
+    created_at: string;
 } & WatchInfo;

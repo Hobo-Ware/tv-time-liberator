@@ -28,6 +28,7 @@ export async function followedMovies(userId: string): Promise<Movie[]> {
                 tvdb: parseInt(tvdb),
                 imdb: '-1' as Undetermined,
             },
+            created_at: object.created_at,
             uuid: object.uuid,
             title: object.meta.name,
             watched_at: object.watched_at,

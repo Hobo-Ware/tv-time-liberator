@@ -7,4 +7,5 @@ export type Series = {
     title: string;
     status: 'stopped' | 'continuing' | 'up_to_date' | 'not_started_yet';
     seasons: Season[];
+    created_at: string;
 }
