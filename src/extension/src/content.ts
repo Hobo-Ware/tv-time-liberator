@@ -8,7 +8,9 @@ const user: { login: string } = JSON.parse(JSON.parse(localStorage.getItem('flut
 const token = localStorage.getItem('flutter.jwtToken')!.slice(1, -1);
 setAuthorizationHeader(token);
 
-function requestIMDB(id: string): Promise<string> {
+const tvdbToImdbKey = (tvdb: number) => `tvdb-${tvdb}`;
+
+function requestIMDB(id: number): Promise<`tt${string}` | '-1'> {
     return browser
         .runtime
         .sendMessage({
@@ -22,18 +24,32 @@ async function extract() {
     const movies = await followedMovies(user.login);
 
     for (const movie of movies) {
-        if (movie.imdb === '-1') {
-            movie.imdb = await requestIMDB(movie.id);
+        if (movie.id.imdb === '-1') {
+            movie.id.imdb = await requestIMDB(movie.id.tvdb);
 
-            if (movie.imdb === '-1') {
+            if (movie.id.imdb === '-1') {
                 console.log(`Failed to find IMDB ID for ${movie.title}`);
             }
 
-            console.log(`Succesfully found IMDB ID for ${movie.title} to ${movie.imdb}`);
+            console.log(`Succesfully found IMDB ID for ${movie.title} to ${movie.id.imdb}`);
         }
     }
 
     const series = await followedSeries(user.login);
+
+    for (const media of [...movies, ...series]) {
+        if (media.id.imdb === '-1') {
+            const key = tvdbToImdbKey(media.id.tvdb);
+            media.id.imdb = localStorage.get(key) ?? await requestIMDB(media.id.tvdb);
+            localStorage.set(key, media.id.imdb);
+    
+            if (media.id.imdb === '-1') {
+                console.log(`Failed to find IMDB ID for ${media.title}!`);
+            }
+    
+            console.log(`Succesfully found IMDB ID for ${media.title} to ${media.id.imdb}.`);
+        }
+    }
 
     console.log('Here are your followed movies and series:', {
         movies,

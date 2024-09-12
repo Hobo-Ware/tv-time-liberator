@@ -1,8 +1,8 @@
+import { MediaIdentifier } from './MediaIdentifier';
 import { WatchInfo } from './WatchInfo';
 
 export type Movie = {
-    id: string;
+    id: MediaIdentifier;
     uuid: string;
-    imdb: string;
     title: string;
 } & WatchInfo;

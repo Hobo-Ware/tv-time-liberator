@@ -1,6 +1,7 @@
 import type { HTMLElement } from 'node-html-parser';
 import axios from 'axios';
 import { assertDefined } from '../utils/assertDefined';
+import { Undetermined } from '../types/MediaIdentifier';
 
 type MediaType = 'movie' | 'series';
 
@@ -19,7 +20,7 @@ async function parseHtml(html: string): Promise<HTMLElement> {
         });
 }
 
-function dereferrer(id: string, type: MediaType): string {
+function dereferrer(id: number, type: MediaType): string {
     if (type === 'movie') {
         return `https://www.thetvdb.com/dereferrer/movie/${id}`;
     }
@@ -27,7 +28,7 @@ function dereferrer(id: string, type: MediaType): string {
     return `https://www.thetvdb.com/dereferrer/series/${id}`;
 }
 
-export function toIMDB(id: string, type: 'movie' | 'series') {
+export function toIMDB(id: number, type: 'movie' | 'series') {
     return axios.get(dereferrer(id, type), {
         headers: {
             Authorization: '',
@@ -39,7 +40,7 @@ export function toIMDB(id: string, type: 'movie' | 'series') {
 
             const regex = /https:\/\/www\.imdb\.com\/title\/(tt\d+)\//;
             const [, imdb] = imdbRef.getAttribute('href')?.match(regex) || [];
-            return assertDefined(imdb, `IMDB ID not found for ${id}.`);
+            return assertDefined(imdb as `tt${string}`, `IMDB ID not found for ${id}.`);
         })
-        .catch(() => '-1');
+        .catch(() => '-1' as Undetermined);
 }

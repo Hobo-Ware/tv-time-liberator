@@ -6,6 +6,7 @@ import { Series } from '../types/Series';
 import { assertDefined } from '../utils/assertDefined';
 import { infoSeries } from './infoSeries';
 import { delay } from './delay';
+import { Undetermined } from '../types/MediaIdentifier';
 
 /**
  * Retrieves a list of followed series.
@@ -18,20 +19,24 @@ export async function followedSeries(userId: string): Promise<Series[]> {
         .then(response => response.data.objects)
         .then(objects => objects.map(object => ({
             uuid: object.uuid,
-            id: object.meta.id,
+            id: {
+                tvdb: object.meta.id,
+                imdb: '-1' as Undetermined,
+            },
             title: object.meta.name,
             status: assertDefined(object.filter.at(-1), 'Status not found.') as Series['status'],
         })));
 
+
     const infoRequests = series
-        .map(async serie => {
+        .map(async show => {
             const info = await delay()
                 .then(() => infoSeries(show.id.tvdb));
 
             console.log(`Fetched info for ${show.title}.`);
 
             return {
-                ...serie,
+                ...show,
                 seasons: info,
             };
         });

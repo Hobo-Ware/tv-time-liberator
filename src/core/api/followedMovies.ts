@@ -3,6 +3,7 @@ import { get } from '../http/get';
 import { MovieResponse } from '../api/models/MovieResponse';
 import { Movie } from '../types/Movie';
 import { assertDefined } from '../utils/assertDefined';
+import { Undetermined } from '../types/MediaIdentifier';
 
 /**
  * Retrieves a list of followed movies.
@@ -14,7 +15,7 @@ export async function followedMovies(userId: string): Promise<Movie[]> {
         .then(response => response.data.objects);
 
     return movies.map(object => {
-        const id = assertDefined(
+        const tvdb = assertDefined(
             object
                 .meta
                 .external_sources
@@ -23,12 +24,14 @@ export async function followedMovies(userId: string): Promise<Movie[]> {
         )?.id;
 
         return {
-            id,
+            id: {
+                tvdb: parseInt(tvdb),
+                imdb: '-1' as Undetermined,
+            },
             uuid: object.uuid,
             title: object.meta.name,
             watched_at: object.watched_at,
             is_watched: object.watched_at != null,
-            imdb: '-1',
         };
     })
 }

@@ -5,7 +5,7 @@ import { writeFile, mkdir } from 'fs/promises';
 import { MemoryStorage, WellKnownItem } from '../core/store/MemoryStorage';
 import { login } from './login';
 import { setAuthorizationHeader } from '../core/http/setAuthorizationHeader';
-
+import { imdbAttacher } from './imdbAttacher';
 const username = MemoryStorage.get(WellKnownItem.Username);
 const password = MemoryStorage.get(WellKnownItem.Password);
 
@@ -16,20 +16,8 @@ setAuthorizationHeader(token);
 const exportDir = '.export';
 await mkdir(exportDir, { recursive: true });
 
-const movies = await followedMovies(userId);
-for (const movie of movies) {
-    if (movie.imdb === '-1') {
-        movie.imdb = await toIMDB(movie.id, 'movie');
-
-        if (movie.imdb === '-1') {
-            console.log(`Failed to find IMDB ID for ${movie.title}`);
-        }
-
-        console.log(`Succesfully found IMDB ID for ${movie.title} to ${movie.imdb}`);
-    }
-}
+const movies = await imdbAttacher(await followedMovies(userId), 'movie');
 await writeFile('.export/movies.json', JSON.stringify(movies, null, 4))
 
-const series = await followedSeries(userId);
+const series = await imdbAttacher(await followedSeries(userId), 'series');
 await writeFile('.export/series.json', JSON.stringify(series, null, 4));
-
