@@ -1,69 +1,44 @@
 import browser from 'webextension-polyfill';
 import { followedMovies, followedSeries } from '../../core/api';
 import { setAuthorizationHeader } from '../../core/http/setAuthorizationHeader';
+import { download } from './utils/download';
+import { imdbAttacher } from './utils/imdbAttacher';
+import { listener } from './request/listener/listener';
+import { Topic } from './request/topic/Topic';
 
 console.log('--- TV Time Liberator Loaded ---');
 
-const user: { login: string } = JSON.parse(JSON.parse(localStorage.getItem('flutter.user')!));
-const token = localStorage.getItem('flutter.jwtToken')!.slice(1, -1);
-setAuthorizationHeader(token);
+function readUser(): { login: string, name: string } {
+    return JSON.parse(JSON.parse(localStorage.getItem('flutter.user')!));
+}
 
-const tvdbToImdbKey = (tvdb: number) => `tvdb-${tvdb}`;
-
-function requestIMDB(id: number): Promise<`tt${string}` | '-1'> {
-    return browser
-        .runtime
-        .sendMessage({
-            type: 'imdb',
-            id,
-        });
+function readToken(): string {
+    return localStorage.getItem('flutter.jwtToken')!.slice(1, -1);
 }
 
 async function extract() {
+    const user: { login: string } = readUser();
+    setAuthorizationHeader(readToken());
+
     console.log('Extracting...');
-    const movies = await followedMovies(user.login);
 
-    for (const movie of movies) {
-        if (movie.id.imdb === '-1') {
-            movie.id.imdb = await requestIMDB(movie.id.tvdb);
+    const movies = await imdbAttacher(await followedMovies(user.login), 'movie');
+    download('movies.json', JSON.stringify(movies, null, 2));
 
-            if (movie.id.imdb === '-1') {
-                console.log(`Failed to find IMDB ID for ${movie.title}`);
-            }
-
-            console.log(`Succesfully found IMDB ID for ${movie.title} to ${movie.id.imdb}`);
-        }
-    }
-
-    const series = await followedSeries(user.login);
-
-    for (const media of [...movies, ...series]) {
-        if (media.id.imdb === '-1') {
-            const key = tvdbToImdbKey(media.id.tvdb);
-            media.id.imdb = localStorage.get(key) ?? await requestIMDB(media.id.tvdb);
-            localStorage.set(key, media.id.imdb);
-    
-            if (media.id.imdb === '-1') {
-                console.log(`Failed to find IMDB ID for ${media.title}!`);
-            }
-    
-            console.log(`Succesfully found IMDB ID for ${media.title} to ${media.id.imdb}.`);
-        }
-    }
-
-    console.log('Here are your followed movies and series:', {
-        movies,
-        series,
-    });
+    const series = await imdbAttacher(await followedSeries(user.login), 'series');
+    download('series.json', JSON.stringify(series, null, 2));
 }
 
-browser
-    .runtime
-    .onMessage
-    .addListener(async (message: any) => {
-        if (message.type === 'extract') {
-            await extract();
-        }
+function isAuthorized(): boolean {
+    const user = readUser();
+    return !!user.name && user.name !== 'Anonymous';
+}
 
-        return true;
-    });
+listener(Topic.Export, async () => {
+    await extract()
+        .catch(console.error);
+});
+
+listener(Topic.CheckAuthorization, () => {
+    return isAuthorized();
+});

@@ -39,7 +39,8 @@ export const Resource = {
              * @param {string} episodeId 
              */
             Info: (episodeId) => `https://app.tvtime.com/sidecar?o=https://api2.tozelabs.com/v2/episode/${episodeId}&fields=id,is_watched,watched_date,watched_count`,
-        }
+        },
+        User: 'https://app.tvtime.com/sidecar?o=https://users.tvtime.com/v1/users/user',
     },
 }
 
