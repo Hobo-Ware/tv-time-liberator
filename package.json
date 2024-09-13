@@ -10,21 +10,27 @@
     "jwt-decode": "^4.0.0",
     "node-html-parser": "^6.1.13",
     "puppeteer": "^23.3.0",
-    "ts-retry": "^5.0.1"
+    "ts-retry": "^5.0.1",
+    "webextension-polyfill": "^0.12.0"
   },
   "description": "",
   "license": "ISC",
   "scripts": {
     "extension": "cd src/extension && bun dev",
+    "extension:build": "cd src/extension && bun run build",
     "cli": "bun run src/cli/index.ts",
     "tester": "bun test src --timeout 30000 --bail"
   },
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "@tsconfig/svelte": "^5.0.4",
     "@types/bun": "^1.1.9",
     "@types/webextension-polyfill": "^0.12.1",
+    "svelte": "^4.2.19",
+    "svelte-check": "^4.0.2",
+    "tslib": "^2.7.0",
     "typescript": "^5.6.2",
-    "vite": "5.0.0",
-    "vite-plugin-web-extension": "^4.1.6",
-    "webextension-polyfill": "^0.12.0"
+    "vite": "^5.4.5",
+    "vite-plugin-web-extension": "^4.1.6"
   }
 }
