@@ -4,6 +4,7 @@ import { getToken } from './token';
 import { exists, get, remove, set, TvTimeValue } from './store/db';
 import { Resource } from '../core/http/Resource';
 import { UserToken } from '../core/types/UserToken';
+import { retryAsync } from 'ts-retry';
 
 async function fetchFlutterToken(): Promise<string> {
     const isFlutterTokenAvailable = await exists(TvTimeValue.FlutterToken);
@@ -72,7 +73,14 @@ export async function login(username: string, password: string): Promise<UserTok
         return userInfo;
     }
 
-    const flutterToken = await fetchFlutterToken();
+    const flutterToken = await retryAsync(() => fetchFlutterToken(), {
+        delay: 100,
+        maxTry: 10,
+        onError: () => {
+            console.log('Retrying to fetch flutter token...');
+        },
+    });
+
     const payload = {
         username,
         password

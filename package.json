@@ -17,7 +17,7 @@
   "scripts": {
     "extension": "cd src/extension && bun dev",
     "cli": "bun run src/cli/index.ts",
-    "test": "bun test src"
+    "tester": "bun test src --timeout 30000 --bail"
   },
   "devDependencies": {
     "@types/bun": "^1.1.9",
