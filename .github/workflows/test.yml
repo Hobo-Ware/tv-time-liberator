@@ -1,0 +1,27 @@
+name: Nightly Tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 'latest'
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run tests
+        run: bun test
+        env:
+          TV_TIME_TEST_USERNAME: ${{ secrets.TV_TIME_TEST_USERNAME }}
+          TV_TIME_TEST_PASSWORD: ${{ secrets.TV_TIME_TEST_PASSWORD }}
