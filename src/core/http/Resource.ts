@@ -12,6 +12,22 @@ export const Resource = {
         Login: 'https://auth.tvtime.com/v1/login',
     },
     Get: {
+        Favorites: {
+            /**
+             * The URL to retrieve a list of favorites followed movies.
+             * 
+             * @param userId - The ID of the user to retrieve the favorites for.
+             * @returns 
+             */
+            Movies: (userId) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v2/lists/user/${userId}/lists/favorite-movies&expand=all`,
+            /**
+             * The URL to retrieve a list of favorites followed series.
+             * 
+             * @param userId - The ID of the user to retrieve the favorites for.
+             * @returns 
+             */
+            Series: (userId) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v2/lists/user/${userId}/lists/favorite-series&expand=all`,
+        },
         Follows: {
             /**
              * The URL to retrieve a list of follows followed series.
