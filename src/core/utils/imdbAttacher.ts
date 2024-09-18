@@ -26,10 +26,10 @@ async function resolveEpisodes(
 }
 
 export async function imdbAttacher(
-    list: Array<Movie> | Array<Series>,
+    list: Array<Movie | Series>,
     type: 'movie' | 'series',
     resolver: (options: DereferrerOptions) => Promise<IMDB>
-): Promise<Array<Movie> | Array<Series>> {
+): Promise<Array<Movie | Series>> {
     for (const media of list) {
         if (type === 'series') {
             await resolveEpisodes(media as Series, resolver);
