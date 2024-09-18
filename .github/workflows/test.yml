@@ -21,7 +21,7 @@ jobs:
         run: bun install
 
       - name: Run tests
-        run: bun test
+        run: bun tester
         env:
           TV_TIME_TEST_USERNAME: ${{ secrets.TV_TIME_TEST_USERNAME }}
           TV_TIME_TEST_PASSWORD: ${{ secrets.TV_TIME_TEST_PASSWORD }}
