@@ -1,10 +1,10 @@
-import { followedMovies, followedSeries, favoriteList } from '../../core/api';
+import { followedMovies, followedSeries, favoriteList, myLists } from '../../core/api';
 import { setAuthorizationHeader } from '../../core/http/setAuthorizationHeader';
 import { download } from './utils/download';
 import { imdbAttacher } from './utils/imdbAttacher';
 import { listener } from './request/listener/listener';
 import { Topic } from './request/topic/Topic';
-import { favoriteMapper } from '../../core/utils/favoriteMapper';
+import { listMapper } from '../../core/utils/listMapper';
 
 console.log('--- TV Time Liberator Loaded ---');
 
@@ -28,12 +28,26 @@ async function extract() {
     const series = await imdbAttacher(await followedSeries(user.login), 'series');
     download('series.json', JSON.stringify(series, null, 2));
 
-    const favorites = await favoriteList(user.login);
-    download('favorites.json', JSON.stringify(favoriteMapper({
-        movies,
-        series,
-        favorites,
-    }), null, 2));
+    const favorites = await favoriteList(user.login)
+        .then(favorites => listMapper({
+            movies,
+            series,
+            list: favorites,
+        }));
+    download('favorites.json', JSON.stringify(favorites, null, 2));
+
+    const lists = await myLists(user.login)
+        .then(lists => lists
+            .map(list => ({
+                ...listMapper({
+                    movies,
+                    series,
+                    list: list.items,
+                }),
+                name: list.name,
+                description: list.description,
+            })));
+    download('lists.json', JSON.stringify(lists, null, 2));
 }
 
 function isAuthorized(): boolean {
