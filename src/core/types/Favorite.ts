@@ -1,7 +1,5 @@
-export type Favorite = {
-    uuid: string;
+import { ListItem } from './List';
+
+export type Favorite = ListItem &{
     tvdb: number;
-    title: string;
-    created_at: string;
-    type: 'movie' | 'series';
 }
