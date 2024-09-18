@@ -1,5 +1,6 @@
 import { get } from '../http/get';
 import { Resource } from '../http/Resource';
+import { Undetermined } from '../types/MediaIdentifier';
 import { Season } from '../types/Season';
 import { delay } from './delay';
 import { SeriesInfoResponse } from './models/SeriesInfoResponse';
@@ -17,6 +18,10 @@ export async function infoSeries(id: number): Promise<Season[]> {
                     .then(() => get<{ watched_date: string }>(Resource.Get.Episode.Info(episode.id)));
 
                 return {
+                    id: {
+                        tvdb: episode.id,
+                        imdb: '-1' as Undetermined,
+                    },
                     number: episode.number,
                     special: episode.is_special,
                     is_watched: episode.is_watched,

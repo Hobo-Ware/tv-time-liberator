@@ -1,3 +1,4 @@
+import { MediaIdentifier } from './MediaIdentifier';
 import { WatchInfo } from './WatchInfo';
 
 export type Season = {
@@ -5,5 +6,6 @@ export type Season = {
     episodes: Array<{
         number: number;
         special: boolean;
+        id: MediaIdentifier;
     } & WatchInfo>;
 };
