@@ -27,3 +27,56 @@ Frustrated with your data being held hostage by TV Time? This script will libera
 1. Click on the extension icon
 1. Liberate your data
 
+## Output
+
+### Shows
+```json
+[
+    {
+        "uuid": "c4199ff4-2055-4dc9-ab33-ecf7ffcec6e3",
+        "id": {
+            "tvdb": 366529,
+            "imdb": "tt10574236"
+        },
+        "created_at": "1989-12-25 00:00:00",
+        "title": "Station Eleven",
+        "status": "stopped",
+        "seasons": [
+            {
+                "number": 1,
+                "episodes": [
+                    {
+                        "id": {
+                            "tvdb": 8815687,
+                            "imdb": "tt10579918"
+                        },
+                        "number": 1,
+                        "special": false,
+                        "is_watched": true,
+                        "watched_at": "1989-12-25 00:00:00",
+                    },
+                    ...
+                ]
+            }
+        ]
+    },
+    ...
+]
+```
+
+### Movies
+```json
+[
+    {
+       "uuid": "978899c4-5194-4568-b922-0bd2874c4c1a",
+       "id": {
+            "tvdb": 169,
+            "imdb": "tt0133093"
+        },
+        "created_at": "2024-09-13T10:49:58Z",
+        "title": "The Matrix",
+        "is_watched": false
+    },
+    ...
+]
+```
