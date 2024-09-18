@@ -18,60 +18,100 @@ const station_eleven = {
             "number": 1,
             "episodes": [
                 {
+                    "id": {
+                        "tvdb": 8815687,
+                        "imdb": "-1"
+                    },
                     "number": 1,
                     "special": false,
                     "is_watched": true,
                     "watched_at": "2024-09-13 10:50:29"
                 },
                 {
+                    "id": {
+                        "tvdb": 8884141,
+                        "imdb": "-1"
+                    },
                     "number": 2,
                     "special": false,
                     "is_watched": true,
                     "watched_at": "2024-09-13 10:50:29"
                 },
                 {
+                    "id": {
+                        "tvdb": 8884142,
+                        "imdb": "-1"
+                    },
                     "number": 3,
                     "special": false,
                     "is_watched": true,
                     "watched_at": "2024-09-13 10:50:30"
                 },
                 {
+                    "id": {
+                        "tvdb": 8884143,
+                        "imdb": "-1"
+                    },
                     "number": 4,
                     "special": false,
                     "is_watched": true,
                     "watched_at": "2024-09-13 10:50:30"
                 },
                 {
+                    "id": {
+                        "tvdb": 8884144,
+                        "imdb": "-1"
+                    },
                     "number": 5,
                     "special": false,
                     "is_watched": false,
                     "watched_at": null
                 },
                 {
+                    "id": {
+                        "tvdb": 8884152,
+                        "imdb": "-1"
+                    },
                     "number": 6,
                     "special": false,
                     "is_watched": false,
                     "watched_at": null
                 },
                 {
+                    "id": {
+                        "tvdb": 8884153,
+                        "imdb": "-1"
+                    },
                     "number": 7,
                     "special": false,
                     "is_watched": false,
                     "watched_at": null
                 },
                 {
+                    "id": {
+                        "tvdb": 8884147,
+                        "imdb": "-1"
+                    },
                     "number": 8,
                     "special": false,
                     "is_watched": false,
                     "watched_at": null
                 },
                 {
+                    "id": {
+                        "tvdb": 8885854,
+                        "imdb": "-1"
+                    },
                     "number": 9,
                     "special": false,
                     "is_watched": false,
                     "watched_at": null
                 },
                 {
+                    "id": {
+                        "tvdb": 8885855,
+                        "imdb": "-1"
+                    },
                     "number": 10,
                     "special": false,
                     "is_watched": false,
@@ -83,54 +123,6 @@ const station_eleven = {
 };
 
 const chernobyl = {
-    "uuid": "7bbcdd21-d0a3-40fe-b5f1-480f6648e983",
-    "id": {
-        "tvdb": 360893,
-        "imdb": "-1"
-    },
-    "created_at": "2024-09-13T10:49:37.535433Z",
-    "title": "Chernobyl",
-    "status": "up_to_date",
-    "seasons": [
-        {
-            "number": 1,
-            "episodes": [
-                {
-                    "number": 1,
-                    "special": false,
-                    "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:40"
-                },
-                {
-                    "number": 2,
-                    "special": false,
-                    "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:49"
-                },
-                {
-                    "number": 3,
-                    "special": false,
-                    "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:49"
-                },
-                {
-                    "number": 4,
-                    "special": false,
-                    "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:49"
-                },
-                {
-                    "number": 5,
-                    "special": false,
-                    "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:49"
-                }
-            ]
-        }
-    ]
-};
-
-const house_usher = {
     "uuid": "1a13c391-9a68-4d71-b947-ade779e39b64",
     "id": {
         "tvdb": 411021,
@@ -144,52 +136,152 @@ const house_usher = {
             "number": 1,
             "episodes": [
                 {
+                    "id": {
+                        "tvdb": 8759048,
+                        "imdb": "-1"
+                    },
                     "number": 1,
                     "special": false,
                     "is_watched": true,
                     "watched_at": "2024-09-13 10:50:57"
                 },
                 {
+                    "id": {
+                        "tvdb": 9948522,
+                        "imdb": "-1"
+                    },
                     "number": 2,
                     "special": false,
                     "is_watched": true,
                     "watched_at": "2024-09-13 10:50:58"
                 },
                 {
+                    "id": {
+                        "tvdb": 9948523,
+                        "imdb": "-1"
+                    },
                     "number": 3,
                     "special": false,
                     "is_watched": true,
                     "watched_at": "2024-09-13 10:50:58"
                 },
                 {
+                    "id": {
+                        "tvdb": 9948524,
+                        "imdb": "-1"
+                    },
                     "number": 4,
                     "special": false,
                     "is_watched": false,
                     "watched_at": null
                 },
                 {
+                    "id": {
+                        "tvdb": 9948525,
+                        "imdb": "-1"
+                    },
                     "number": 5,
                     "special": false,
                     "is_watched": false,
                     "watched_at": null
                 },
                 {
+                    "id": {
+                        "tvdb": 9948526,
+                        "imdb": "-1"
+                    },
                     "number": 6,
                     "special": false,
                     "is_watched": false,
                     "watched_at": null
                 },
                 {
+                    "id": {
+                        "tvdb": 9948527,
+                        "imdb": "-1"
+                    },
                     "number": 7,
                     "special": false,
                     "is_watched": false,
                     "watched_at": null
                 },
                 {
+                    "id": {
+                        "tvdb": 9948528,
+                        "imdb": "-1"
+                    },
                     "number": 8,
                     "special": false,
                     "is_watched": false,
                     "watched_at": null
+                }
+            ]
+        }
+    ]
+};
+
+const house_usher = {
+    "uuid": "7bbcdd21-d0a3-40fe-b5f1-480f6648e983",
+    "id": {
+        "tvdb": 360893,
+        "imdb": "-1"
+    },
+    "created_at": "2024-09-13T10:49:37.535433Z",
+    "title": "Chernobyl",
+    "status": "up_to_date",
+    "seasons": [
+        {
+            "number": 1,
+            "episodes": [
+                {
+                    "id": {
+                        "tvdb": 7082952,
+                        "imdb": "-1"
+                    },
+                    "number": 1,
+                    "special": false,
+                    "is_watched": true,
+                    "watched_at": "2024-09-13 10:50:40"
+                },
+                {
+                    "id": {
+                        "tvdb": 7109113,
+                        "imdb": "-1"
+                    },
+                    "number": 2,
+                    "special": false,
+                    "is_watched": true,
+                    "watched_at": "2024-09-13 10:50:49"
+                },
+                {
+                    "id": {
+                        "tvdb": 7223774,
+                        "imdb": "-1"
+                    },
+                    "number": 3,
+                    "special": false,
+                    "is_watched": true,
+                    "watched_at": "2024-09-13 10:50:49"
+                },
+                {
+                    "id": {
+                        "tvdb": 7116984,
+                        "imdb": "-1"
+                    },
+                    "number": 4,
+                    "special": false,
+                    "is_watched": true,
+                    "watched_at": "2024-09-13 10:50:49"
+                },
+                {
+                    "id": {
+                        "tvdb": 7116987,
+                        "imdb": "-1"
+                    },
+                    "number": 5,
+                    "special": false,
+                    "is_watched": true,
+                    "watched_at": "2024-09-13 10:50:49"
                 }
             ]
         }
