@@ -1,6 +1,7 @@
 import { describe, expect, it, afterEach } from 'bun:test';
 import { Movie } from '../core/types/Movie';
 import { imdbAttacher } from './imdbAttacher';
+import { Series } from '../core/types/Series';
 
 describe('imdbAttacher', () => {
     it('should attach imdb data to a movie', async () => {
@@ -23,14 +24,14 @@ describe('imdbAttacher', () => {
 
     it('should attach imdb data to a list of movies', async () => {
         const expected = {
-            "340197": "tt7510222",
-            "343545": "tt13539646",
-            "90": "tt7605074",
-            "11716": "tt6791350",
-            "339791": "tt12121582",
-            "331904": "tt16428256",
-            "343593": "tt16419074",
-            "332800": "tt6160448"
+            340197: "tt7510222",
+            343545: "tt13539646",
+            90: "tt7605074",
+            11716: "tt6791350",
+            339791: "tt12121582",
+            331904: "tt16428256",
+            343593: "tt16419074",
+            332800: "tt6160448"
         };
 
         const movies: Movie[] = [
@@ -118,5 +119,118 @@ describe('imdbAttacher', () => {
         result.forEach((movie) => {
             expect(movie.id.imdb).toEqual(expected[movie.id.tvdb.toString()]);
         });
+    });
+
+    it('should attach imdb data to a series', async () => {
+        const expected = {
+            411021: "tt15567174",
+            8759048: "tt15722966",
+            9948522: "tt15722970",
+            9948523: "tt15722972",
+            9948524: "tt16265850",
+            9948525: "tt16265864",
+            9948526: "tt16265866",
+            9948527: "tt16265868",
+            9948528: "tt16265870"
+        };
+
+        const series: Series = {
+            uuid: "1a13c391-9a68-4d71-b947-ade779e39b64",
+            id: {
+                tvdb: 411021,
+                imdb: "-1"
+            },
+            created_at: "2024-09-13T10:49:37.535425Z",
+            title: "The Fall of the House of Usher",
+            status: "continuing",
+            seasons: [
+                {
+                    number: 1,
+                    episodes: [
+                        {
+                            id: {
+                                tvdb: 8759048,
+                                imdb: "-1"
+                            },
+                            number: 1,
+                            special: false,
+                            is_watched: true,
+                            watched_at: "2024-09-13 10:50:57"
+                        },
+                        {
+                            id: {
+                                tvdb: 9948522,
+                                imdb: "-1"
+                            },
+                            number: 2,
+                            special: false,
+                            is_watched: true,
+                            watched_at: "2024-09-13 10:50:58"
+                        },
+                        {
+                            id: {
+                                tvdb: 9948523,
+                                imdb: "-1"
+                            },
+                            number: 3,
+                            special: false,
+                            is_watched: true,
+                            watched_at: "2024-09-13 10:50:58"
+                        },
+                        {
+                            id: {
+                                tvdb: 9948524,
+                                imdb: "-1"
+                            },
+                            number: 4,
+                            special: false,
+                            is_watched: false,
+                        },
+                        {
+                            id: {
+                                tvdb: 9948525,
+                                imdb: "-1"
+                            },
+                            number: 5,
+                            special: false,
+                            is_watched: false,
+                        },
+                        {
+                            id: {
+                                tvdb: 9948526,
+                                imdb: "-1"
+                            },
+                            number: 6,
+                            special: false,
+                            is_watched: false,
+                        },
+                        {
+                            id: {
+                                tvdb: 9948527,
+                                imdb: "-1"
+                            },
+                            number: 7,
+                            special: false,
+                            is_watched: false,
+                        },
+                        {
+                            id: {
+                                tvdb: 9948528,
+                                imdb: "-1"
+                            },
+                            number: 8,
+                            special: false,
+                            is_watched: false,
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const [result] = await imdbAttacher([series], 'series') as Series[];
+
+        for (const episode of result.seasons.at(0)!.episodes) {
+            expect(episode.id.imdb).toEqual(expected[episode.id.tvdb.toString()]);
+        }
     });
 });
