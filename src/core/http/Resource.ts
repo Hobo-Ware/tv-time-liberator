@@ -12,6 +12,13 @@ export const Resource = {
         Login: 'https://auth.tvtime.com/v1/login',
     },
     Get: {
+        /**
+         * The URL to retrieve the user's media lists.
+         * 
+         * @param userId - The ID of the user to retrieve the lists for.
+         * @returns 
+         */
+        Lists: (userId) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v2/lists/user/${userId}&expand=meta`,
         Favorites: {
             /**
              * The URL to retrieve a list of favorites followed movies.
