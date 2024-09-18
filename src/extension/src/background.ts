@@ -3,4 +3,4 @@ import { toIMDB } from '../../core/api';
 import { listener } from './request/listener/listener';
 import { Topic } from './request/topic/Topic';
 
-listener(Topic.IMDB, async ({ id, type }) => await toIMDB(id, type));
+listener(Topic.IMDB, async (options) => await toIMDB(options));

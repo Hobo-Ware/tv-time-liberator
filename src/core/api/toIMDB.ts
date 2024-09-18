@@ -1,11 +1,7 @@
 import type { HTMLElement } from 'node-html-parser';
 import axios from 'axios';
 import { assertDefined } from '../utils/assertDefined';
-import { Undetermined } from '../types/MediaIdentifier';
-
-type MediaType = 'movie' | 'series';
-
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+import type { Undetermined } from '../types/MediaIdentifier';
 
 async function parseHtml(html: string): Promise<HTMLElement> {
     if (globalThis.DOMParser) {
@@ -20,16 +16,35 @@ async function parseHtml(html: string): Promise<HTMLElement> {
         });
 }
 
-function dereferrer(id: number, type: MediaType): string {
+export type DereferrerOptions = {
+    id: number;
+    type: 'movie' | 'series';
+} | {
+    showId: number;
+    episodeId: number;
+    type: 'episode';
+};
+
+async function dereferrer(options: DereferrerOptions): Promise<string> {
+    const { type } = options;
+
+    if (type === 'episode') {
+        const response = await fetch(await dereferrer({ id: options.showId, type: 'series' }), { method: 'HEAD' });
+        const location = response.url;
+        return `${location}/episodes/${options.episodeId}`;
+    }
+
+    const { id } = options;
+
     if (type === 'movie') {
-        return `https://www.thetvdb.com/dereferrer/movie/${id}`;
+        return `https://www.thetvdb.com/dereferrer/movie/${options.id}`;
     }
 
     return `https://www.thetvdb.com/dereferrer/series/${id}`;
 }
 
-export function toIMDB(id: number, type: 'movie' | 'series') {
-    return axios.get(dereferrer(id, type), {
+export async function toIMDB(options: DereferrerOptions) {
+    return axios.get(await dereferrer(options), {
         headers: {
             Authorization: '',
         }
@@ -40,7 +55,7 @@ export function toIMDB(id: number, type: 'movie' | 'series') {
 
             const regex = /https:\/\/www\.imdb\.com\/title\/(tt\d+)\//;
             const [, imdb] = imdbRef.getAttribute('href')?.match(regex) || [];
-            return assertDefined(imdb as `tt${string}`, `IMDB ID not found for ${id}.`);
+            return assertDefined(imdb as `tt${string}`, `IMDB ID not found for ${JSON.stringify(options)}.`);
         })
         .catch(() => '-1' as Undetermined);
 }
