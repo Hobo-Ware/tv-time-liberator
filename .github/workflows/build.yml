@@ -1,6 +1,9 @@
-name: Build and Publish Extension
+name: Build Extension
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - main
@@ -22,8 +25,9 @@ jobs:
 
       - name: Build extension
         run: bun extension:build
-
-      - name: Upload artifact
+          
+      - if: github.ref == 'refs/heads/main'
+        name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: tv-time-liberator
