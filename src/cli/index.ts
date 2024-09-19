@@ -1,16 +1,23 @@
-import './setup';
-
-import { followedMovies, followedSeries, toIMDB } from '../core/api';
+import { followedMovies, followedSeries } from '../core/api';
 import { writeFile, mkdir } from 'fs/promises';
-import { MemoryStorage, WellKnownItem } from '../core/store/MemoryStorage';
 import { login } from './login';
 import { setAuthorizationHeader } from '../core/http/setAuthorizationHeader';
 import { imdbAttacher } from './imdbAttacher';
 import { favoriteList } from '../core/api/favoriteList';
 import { listMapper } from '../core/utils/listMapper';
 import { myLists } from '../core/api/myLists';
-const username = MemoryStorage.get(WellKnownItem.Username);
-const password = MemoryStorage.get(WellKnownItem.Password);
+
+const username = process.env.TV_TIME_USERNAME;
+if (!username) {
+    console.error('Please provide TV_TIME_USERNAME environment variable.');
+    process.exit(1);
+}
+
+const password = process.env.TV_TIME_PASSWORD;
+if (!password) {
+    console.error('Please provide TV_TIME_PASSWORD environment variable.');
+    process.exit(1);
+}
 
 const { userId, token } = await login(username, password);
 
