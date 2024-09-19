@@ -1,10 +1,12 @@
 import { followedMovies, followedSeries, favoriteList, myLists } from '../../core/api';
 import { setAuthorizationHeader } from '../../core/http/setAuthorizationHeader';
 import { download } from './utils/download';
-import { imdbAttacher } from './utils/imdbAttacher';
 import { listener } from './request/listener/listener';
 import { Topic } from './request/topic/Topic';
 import { listMapper } from '../../core/utils/listMapper';
+import { imdb } from './request/topic/imdb';
+import { setCache } from '../../core/http';
+import { LocalStore } from './store';
 
 console.log('--- TV Time Liberator Loaded ---');
 
@@ -19,13 +21,14 @@ function readToken(): string {
 async function extract() {
     const user: { login: string } = readUser();
     setAuthorizationHeader(readToken());
+    setCache(LocalStore);
 
     console.log('Extracting...');
 
-    const movies = await imdbAttacher(await followedMovies(user.login), 'movie');
+    const movies = await await followedMovies(user.login, imdb);
     download('movies.json', JSON.stringify(movies, null, 2));
 
-    const series = await imdbAttacher(await followedSeries(user.login), 'series');
+    const series = await followedSeries(user.login, imdb);
     download('series.json', JSON.stringify(series, null, 2));
 
     const favorites = await favoriteList(user.login)

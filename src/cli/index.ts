@@ -2,10 +2,11 @@ import { followedMovies, followedSeries } from '../core/api';
 import { writeFile, mkdir } from 'fs/promises';
 import { login } from './login';
 import { setAuthorizationHeader } from '../core/http/setAuthorizationHeader';
-import { imdbAttacher } from './imdbAttacher';
 import { favoriteList } from '../core/api/favoriteList';
 import { listMapper } from '../core/utils/listMapper';
 import { myLists } from '../core/api/myLists';
+import { setCache } from '../core/http';
+import { PersistentStore } from './store';
 
 const username = process.env.TV_TIME_USERNAME;
 if (!username) {
@@ -22,14 +23,15 @@ if (!password) {
 const { userId, token } = await login(username, password);
 
 setAuthorizationHeader(token);
+setCache(PersistentStore);
 
 const exportDir = '.export';
 await mkdir(exportDir, { recursive: true });
 
-const movies = await imdbAttacher(await followedMovies(userId), 'movie');
+const movies = await followedMovies(userId);
 await writeFile('.export/movies.json', JSON.stringify(movies, null, 4))
 
-const series = await imdbAttacher(await followedSeries(userId), 'series');
+const series = await followedSeries(userId);
 await writeFile('.export/series.json', JSON.stringify(series, null, 4));
 
 const favorites = await favoriteList(userId)
