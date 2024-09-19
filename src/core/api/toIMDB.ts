@@ -1,7 +1,6 @@
 import type { HTMLElement } from 'node-html-parser';
-import axios from 'axios';
 import { assertDefined } from '../utils/assertDefined';
-import { IMDBReference, IMDBUndefined } from '../types/IMDBReference';
+import type { IMDBReference, IMDBUndefined } from '../types/IMDBReference';
 import { request } from '../http';
 
 async function parseHtml(html: string): Promise<HTMLElement> {

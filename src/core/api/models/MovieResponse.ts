@@ -1,4 +1,4 @@
-import { MovieEntry } from './MovieEntry';
+import type { MovieEntry } from './MovieEntry';
 
 export type MovieResponse = {
     data: {

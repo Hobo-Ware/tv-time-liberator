@@ -1,4 +1,4 @@
-import { SeriesEntry } from './SeriesEntry'
+import type { SeriesEntry } from './SeriesEntry'
 
 export type SeriesResponse = {
     data: {

@@ -1,6 +1,6 @@
 import { request, Resource } from '../http';
-import { FavoriteResponse } from './models/FavoriteResponse';
-import { Favorite } from '../types/Favorite';
+import type { FavoriteResponse } from './models/FavoriteResponse';
+import type { Favorite } from '../types/Favorite';
 
 /**
  * Retrieves a list of favorites.

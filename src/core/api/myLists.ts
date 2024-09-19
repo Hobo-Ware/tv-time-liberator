@@ -1,6 +1,6 @@
 import { Resource } from '../http/Resource';
-import { ListsResponse } from './models/ListsResponse';
-import { List } from '../types/List';
+import type { ListsResponse } from './models/ListsResponse';
+import type { List } from '../types/List';
 import { request } from '../http';
 
 export function myLists(userId: string): Promise<List[]> {
