@@ -1,6 +1,6 @@
 
 import { request, Resource } from '../http';
-import type { SeriesResponse } from './models/SeriesReposne';
+import type { SeriesListResponse } from './models/SeriesListResponse';
 import type { Series } from '../types/Series';
 import { assertDefined } from '../utils/assertDefined';
 import { infoSeries } from './infoSeries';
@@ -14,7 +14,7 @@ import { toIMDB } from './toIMDB';
 export async function followedSeries(userId: string, imdbResolver: typeof toIMDB = toIMDB): Promise<Series[]> {
     const url = Resource.Get.Follows.Series(userId);
 
-    const series = await request<SeriesResponse>(url)
+    const series = await request<SeriesListResponse>(url)
         .then(response => response.data.objects)
         .then(objects => {
             const mapped = objects

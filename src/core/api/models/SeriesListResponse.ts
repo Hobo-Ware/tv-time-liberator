@@ -1,6 +1,6 @@
 import type { SeriesEntry } from './SeriesEntry'
 
-export type SeriesResponse = {
+export type SeriesListResponse = {
     data: {
         objects: SeriesEntry[];
     }

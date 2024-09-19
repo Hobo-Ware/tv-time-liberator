@@ -1,7 +1,13 @@
-import type { MovieEntry } from './MovieEntry';
+import { Externalsource } from './ExternalSource';
 
-export type MovieResponse = {
+export interface MovieResponse {
     data: {
-        objects: MovieEntry[];
+        uuid: string;
+        created_at: string;
+        updated_at: string;
+        external_sources: Externalsource[];
+        type: string;
+        name: string;
+        filter: string[];
     }
-};
+}
