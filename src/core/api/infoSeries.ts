@@ -1,6 +1,6 @@
 import { get } from '../http/get';
 import { Resource } from '../http/Resource';
-import { Undetermined } from '../types/MediaIdentifier';
+import { IMDBUndefined } from '../types/IMDBReference';
 import { Season } from '../types/Season';
 import { delay } from './delay';
 import { SeriesInfoResponse } from './models/SeriesInfoResponse';
@@ -20,7 +20,7 @@ export async function infoSeries(id: number): Promise<Season[]> {
                 return {
                     id: {
                         tvdb: episode.id,
-                        imdb: '-1' as Undetermined,
+                        imdb: '-1' as IMDBUndefined,
                     },
                     number: episode.number,
                     special: episode.is_special,

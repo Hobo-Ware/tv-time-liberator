@@ -1,6 +1,6 @@
-export type Undetermined = '-1';
+import { IMDBReference } from './IMDBReference';
 
 export type MediaIdentifier = {
     tvdb: number;
-    imdb: `tt${string}` | Undetermined;
+    imdb: IMDBReference;
 };

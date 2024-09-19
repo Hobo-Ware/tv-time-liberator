@@ -6,7 +6,7 @@ import { Series } from '../types/Series';
 import { assertDefined } from '../utils/assertDefined';
 import { infoSeries } from './infoSeries';
 import { delay } from './delay';
-import { Undetermined } from '../types/MediaIdentifier';
+import { IMDBUndefined } from '../types/IMDBReference';
 
 /**
  * Retrieves a list of followed series.
@@ -21,7 +21,7 @@ export async function followedSeries(userId: string): Promise<Series[]> {
             uuid: object.uuid,
             id: {
                 tvdb: object.meta.id,
-                imdb: '-1' as Undetermined,
+                imdb: '-1' as IMDBUndefined,
             },
             created_at: object.created_at,
             title: object.meta.name,
