@@ -1,5 +1,5 @@
 import { request, Resource } from '../http';
-import type { MovieResponse } from '../api/models/MovieResponse';
+import type { MoviesResponse } from './models/MoviesResponse';
 import type { Movie } from '../types/Movie';
 import { assertDefined } from '../utils/assertDefined';
 import { toIMDB } from './toIMDB';
@@ -10,7 +10,7 @@ import { toIMDB } from './toIMDB';
  */
 export async function followedMovies(userId: string, imdbResolver: typeof toIMDB = toIMDB): Promise<Movie[]> {
     const url = Resource.Get.Follows.Movies(userId);
-    const movies = await request<MovieResponse>(url)
+    const movies = await request<MoviesResponse>(url)
         .then(response => response.data.objects);
 
     const mapped = movies
