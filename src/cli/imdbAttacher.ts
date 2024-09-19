@@ -1,8 +1,9 @@
 import { toIMDB } from '../core/api';
 import { Movie } from '../core/types/Movie';
 import { Series } from '../core/types/Series';
-import { set, get, TvTimeValue } from './store/db';
+import { PersistentStore, TvTimeValue } from './store';
 import { imdbAttacher as attacher } from '../core/utils/imdbAttacher';
+import { IMDBReference } from '../core/types/IMDBReference';
 
 export function imdbAttacher(list: Array<Movie | Series>, type: 'movie'): Promise<Array<Movie>>;
 export function imdbAttacher(list: Array<Movie | Series>, type: 'series'): Promise<Array<Series>>;
@@ -12,11 +13,11 @@ export async function imdbAttacher(list: Array<Movie | Series>, type: 'movie' | 
             ? options.episodeId
             : options.id;
 
-        const imdb = await get(TvTimeValue.TvdbToImdb(tvdb))
+        const imdb = await PersistentStore.get<IMDBReference>(TvTimeValue.TvdbToImdb(tvdb))
             ?? await toIMDB(options);
 
         if (imdb !== '-1') {
-            await set(TvTimeValue.TvdbToImdb(tvdb), imdb);
+            await PersistentStore.set<IMDBReference>(TvTimeValue.TvdbToImdb(tvdb), imdb);
         }
 
         return imdb;

@@ -3,7 +3,7 @@ import { get } from '../http/get';
 import { MovieResponse } from '../api/models/MovieResponse';
 import { Movie } from '../types/Movie';
 import { assertDefined } from '../utils/assertDefined';
-import { Undetermined } from '../types/MediaIdentifier';
+import { IMDBUndefined } from '../types/IMDBReference';
 
 /**
  * Retrieves a list of followed movies.
@@ -26,7 +26,7 @@ export async function followedMovies(userId: string): Promise<Movie[]> {
         return {
             id: {
                 tvdb: parseInt(tvdb),
-                imdb: '-1' as Undetermined,
+                imdb: '-1' as IMDBUndefined,
             },
             created_at: object.created_at,
             uuid: object.uuid,

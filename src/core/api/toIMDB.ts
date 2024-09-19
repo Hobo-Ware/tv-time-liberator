@@ -1,7 +1,7 @@
 import type { HTMLElement } from 'node-html-parser';
 import axios from 'axios';
 import { assertDefined } from '../utils/assertDefined';
-import type { Undetermined } from '../types/MediaIdentifier';
+import { IMDBReference, IMDBUndefined } from '../types/IMDBReference';
 
 async function parseHtml(html: string): Promise<HTMLElement> {
     if (globalThis.DOMParser) {
@@ -43,7 +43,7 @@ async function dereferrer(options: DereferrerOptions): Promise<string> {
     return `https://www.thetvdb.com/dereferrer/series/${id}`;
 }
 
-export async function toIMDB(options: DereferrerOptions) {
+export async function toIMDB(options: DereferrerOptions): Promise<IMDBReference> {
     return axios.get(await dereferrer(options), {
         headers: {
             Authorization: '',
@@ -55,7 +55,7 @@ export async function toIMDB(options: DereferrerOptions) {
 
             const regex = /https:\/\/www\.imdb\.com\/title\/(tt\d+)\//;
             const [, imdb] = imdbRef.getAttribute('href')?.match(regex) || [];
-            return assertDefined(imdb as `tt${string}`, `IMDB ID not found for ${JSON.stringify(options)}.`);
+            return assertDefined(imdb as IMDBReference, `IMDB ID not found for ${JSON.stringify(options)}.`);
         })
-        .catch(() => '-1' as Undetermined);
+        .catch(() => '-1' as IMDBUndefined);
 }

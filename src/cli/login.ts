@@ -1,29 +1,28 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { getToken } from './token';
-import { exists, get, remove, set, TvTimeValue } from './store/db';
+import { PersistentStore, TvTimeValue } from './store';
 import { Resource } from '../core/http/Resource';
 import { UserToken } from '../core/types/UserToken';
 import { retryAsync } from 'ts-retry';
 
 async function fetchFlutterToken(): Promise<string> {
-    const isFlutterTokenAvailable = await exists(TvTimeValue.FlutterToken);
-
+    const isFlutterTokenAvailable = await PersistentStore.has(TvTimeValue.FlutterToken);
     if (!isFlutterTokenAvailable) {
         const token = await getToken();
-        set(TvTimeValue.FlutterToken, token);
+        await PersistentStore.set(TvTimeValue.FlutterToken, token);
         return token;
     }
-
-    const cachedToken = await get(TvTimeValue.FlutterToken);
+    
+    const cachedToken = await PersistentStore.get<string>(TvTimeValue.FlutterToken);
 
     const invalidateAndRetry = async () => {
-        await remove(TvTimeValue.FlutterToken);
+        await PersistentStore.delete(TvTimeValue.FlutterToken);
         return fetchFlutterToken();
     }
 
     try {
-        const { exp = 0 } = jwtDecode(cachedToken);
+        const { exp = 0 } = jwtDecode(cachedToken!);
 
         if (Date.now() >= exp * 1000) {
             console.log('Flutter token expired, regenerating...');
@@ -35,20 +34,20 @@ async function fetchFlutterToken(): Promise<string> {
         return await invalidateAndRetry();
     }
 
-    return cachedToken;
+    return cachedToken!;
 }
 
 async function fetchUser(): Promise<UserToken | null | undefined> {
-    const isUserTokenAvailable = await exists(TvTimeValue.UserToken);
+    const isUserTokenAvailable = await PersistentStore.has(TvTimeValue.UserToken);
 
     if (!isUserTokenAvailable) {
         return null;
     }
 
-    const user = await get(TvTimeValue.UserToken);
+    const user = await PersistentStore.get<UserToken>(TvTimeValue.UserToken);
 
     try {
-        const { exp = 0 } = jwtDecode(user.token);
+        const { exp = 0 } = jwtDecode(user!.token);
         const isTokenExpired = Date.now() >= exp * 1000;
 
         if (!isTokenExpired) {
@@ -56,7 +55,7 @@ async function fetchUser(): Promise<UserToken | null | undefined> {
         }
     } catch (error) {
         console.log('User token corrupted, removing...');
-        await await remove(TvTimeValue.UserToken);
+        await PersistentStore.delete(TvTimeValue.UserToken);
     }
 }
 
@@ -104,7 +103,7 @@ export async function login(username: string, password: string): Promise<UserTok
             userId,
         };
 
-        await set(TvTimeValue.UserToken, userToken);
+        await PersistentStore.set(TvTimeValue.UserToken, userToken);
 
         return userToken;
     } catch (error) {

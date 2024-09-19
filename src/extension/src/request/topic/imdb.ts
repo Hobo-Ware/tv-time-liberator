@@ -1,7 +1,8 @@
 import { emit } from '../emitter/emit';
 import { Topic } from './Topic';
-import type { IMDBReference } from '../models/IMDBReference';
 import type { DereferrerOptions } from '../../../../core/api';
+import type { IMDBReference } from '../../../../core/types/IMDBReference';
+import { LocalStore } from '../../store';
 
 const tvdbToImdbKey = (tvdb: number) => `tvdb-${tvdb}`;
 
@@ -10,11 +11,11 @@ export async function imdb(options: DereferrerOptions): Promise<IMDBReference> {
         ? options.episodeId
         : options.id;
 
-    const imdb = localStorage.getItem(tvdbToImdbKey(id)) as IMDBReference | null
+    const imdb = await LocalStore.get<IMDBReference>(tvdbToImdbKey(id))
         ?? await emit(Topic.IMDB, options);
 
     if (imdb !== '-1') {
-        localStorage.setItem(tvdbToImdbKey(id), imdb);
+        await LocalStore.set(tvdbToImdbKey(id), imdb);
     }
 
     return imdb as IMDBReference;
