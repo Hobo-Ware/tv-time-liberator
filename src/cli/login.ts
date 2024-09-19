@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { getToken } from './token';
 import { PersistentStore, TvTimeValue } from './store';
@@ -13,7 +12,7 @@ async function fetchFlutterToken(): Promise<string> {
         await PersistentStore.set(TvTimeValue.FlutterToken, token);
         return token;
     }
-    
+
     const cachedToken = await PersistentStore.get<string>(TvTimeValue.FlutterToken);
 
     const invalidateAndRetry = async () => {
@@ -87,15 +86,20 @@ export async function login(username: string, password: string): Promise<UserTok
 
     try {
         console.log('Logging in...');
-        const response = await axios
-            .post(Resource.Post.Login, payload, {
+        const response = await fetch(
+            Resource.Post.Login,
+            {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${flutterToken}`,
-                }
-            });
+                },
+                method: 'POST',
+                body: JSON.stringify(payload)
+            }
+        ).then(res => res.json());
 
-        const { data } = response.data;
+        const { data } = response;
+
         const { jwt_token: token, id: userId } = data;
 
         const userToken = {

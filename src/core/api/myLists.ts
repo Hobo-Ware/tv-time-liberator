@@ -1,13 +1,13 @@
-import axios from 'axios';
 import { Resource } from '../http/Resource';
 import { ListsResponse } from './models/ListsResponse';
 import { List } from '../types/List';
+import { request } from '../http';
 
 export function myLists(userId: string): Promise<List[]> {
     const url = Resource.Get.Lists(userId);
 
-    return axios.get<ListsResponse>(url)
-        .then(response => response.data.data)
+    return request<ListsResponse>(url)
+        .then(response => response.data)
         .then(lists => lists
             .map(list => ({
                 name: list.name,

@@ -2,6 +2,7 @@ import type { HTMLElement } from 'node-html-parser';
 import axios from 'axios';
 import { assertDefined } from '../utils/assertDefined';
 import { IMDBReference, IMDBUndefined } from '../types/IMDBReference';
+import { request } from '../http';
 
 async function parseHtml(html: string): Promise<HTMLElement> {
     if (globalThis.DOMParser) {
@@ -44,12 +45,13 @@ async function dereferrer(options: DereferrerOptions): Promise<string> {
 }
 
 export async function toIMDB(options: DereferrerOptions): Promise<IMDBReference> {
-    return axios.get(await dereferrer(options), {
+    return request<string>(await dereferrer(options), {
         headers: {
             Authorization: '',
-        }
+        },
+        responseType: 'text',
     })
-        .then(response => parseHtml(response.data))
+        .then(markup => parseHtml(markup))
         .then(doc => {
             const imdbRef = assertDefined(doc.querySelector('a[href^="https://www.imdb.com/title/"]'), 'IMDB reference not found.');
 

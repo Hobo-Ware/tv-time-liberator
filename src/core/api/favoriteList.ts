@@ -1,5 +1,4 @@
-import { Resource } from '../http/Resource';
-import { get } from '../http/get';
+import { request, Resource } from '../http';
 import { FavoriteResponse } from './models/FavoriteResponse';
 import { Favorite } from '../types/Favorite';
 
@@ -9,11 +8,11 @@ import { Favorite } from '../types/Favorite';
  */
 export async function favoriteList(userId: string): Promise<Favorite[]> {
     const movieUrl = Resource.Get.Favorites.Movies(userId);
-    const movies = await get<FavoriteResponse>(movieUrl)
+    const movies = await request<FavoriteResponse>(movieUrl)
         .then(response => response.data.objects);
 
     const seriesUrl = Resource.Get.Favorites.Series(userId);
-    const series = await get<FavoriteResponse>(seriesUrl)
+    const series = await request<FavoriteResponse>(seriesUrl)
         .then(response => response.data.objects);
 
     return [...movies, ...series]
