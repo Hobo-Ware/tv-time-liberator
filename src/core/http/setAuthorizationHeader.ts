@@ -1,5 +1,5 @@
-import axios from 'axios';
+import { authorizationHeader } from './internal/authorizationHeader';
 
 export function setAuthorizationHeader(token: string): void {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    authorizationHeader['Authorization'] = `Bearer ${token}`;
 }
