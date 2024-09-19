@@ -304,3 +304,62 @@ export const house_usher_continuing = {
         }
     ]
 };
+
+export const alien_unwatched = {
+    "id": {
+        "tvdb": 264,
+        "imdb": "tt0078748"
+    },
+    "created_at": "2024-09-17T18:34:36Z",
+    "uuid": "2441a861-c846-4a3c-b365-32f720426143",
+    "title": "Alien",
+    "is_watched": false,
+    "added_at": "2024-09-19T20:33:52Z"
+};
+
+export const the_triangle_unwatched = {
+    "id": {
+        "imdb": "tt0452573",
+        "tvdb": 75599
+    },
+    "title": "The Triangle",
+    "uuid": "95cf94ef-7ae2-4e33-b7a5-4e60daf6cdcd",
+    "seasons": [
+        {
+            "number": 1,
+            "episodes": [
+                {
+                    "id": {
+                        "tvdb": 301849,
+                        "imdb": "tt1614295"
+                    },
+                    "number": 1,
+                    "special": false,
+                    "is_watched": false,
+                    "watched_at": null
+                },
+                {
+                    "id": {
+                        "tvdb": 301850,
+                        "imdb": "tt1614296"
+                    },
+                    "number": 2,
+                    "special": false,
+                    "is_watched": false,
+                    "watched_at": null
+                },
+                {
+                    "id": {
+                        "tvdb": 301851,
+                        "imdb": "tt1614297"
+                    },
+                    "number": 3,
+                    "special": false,
+                    "is_watched": false,
+                    "watched_at": null
+                }
+            ]
+        }
+    ],
+    "added_at": "2024-09-19T20:34:30Z"
+};

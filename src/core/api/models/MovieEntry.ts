@@ -1,3 +1,5 @@
+import { Externalsource } from './ExternalSource';
+
 export interface MovieEntry {
     uuid: string;
     entity_type: 'movie';
@@ -13,7 +15,3 @@ interface Meta {
     name: string;
 }
 
-interface Externalsource {
-    id: string;
-    source: 'tvdb';
-}

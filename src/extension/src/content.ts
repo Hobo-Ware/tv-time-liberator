@@ -3,7 +3,6 @@ import { setAuthorizationHeader } from '../../core/http/setAuthorizationHeader';
 import { download } from './utils/download';
 import { listener } from './request/listener/listener';
 import { Topic } from './request/topic/Topic';
-import { listMapper } from '../../core/utils/listMapper';
 import { imdb } from './request/topic/imdb';
 import { setCache } from '../../core/http';
 import { LocalStore } from './store';
@@ -31,25 +30,10 @@ async function extract() {
     const series = await followedSeries(user.login, imdb);
     download('series.json', JSON.stringify(series, null, 2));
 
-    const favorites = await favoriteList(user.login)
-        .then(favorites => listMapper({
-            movies,
-            series,
-            list: favorites,
-        }));
+    const favorites = await favoriteList(user.login, imdb);
     download('favorites.json', JSON.stringify(favorites, null, 2));
 
-    const lists = await myLists(user.login)
-        .then(lists => lists
-            .map(list => ({
-                ...listMapper({
-                    movies,
-                    series,
-                    list: list.items,
-                }),
-                name: list.name,
-                description: list.description,
-            })));
+    const lists = await myLists(user.login, imdb);
     download('lists.json', JSON.stringify(lists, null, 2));
 }
 

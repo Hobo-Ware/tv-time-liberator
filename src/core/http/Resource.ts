@@ -49,7 +49,11 @@ export const Resource = {
              */
             Movies: (userId: string) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/tracking/cgw/follows/user/${userId}&entity_type=movie&sort=watched_date,desc`,
         },
+        Movie: {
+            GetByUUID: (uuid: string) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/movies/${uuid}`,
+        },
         Series: {
+            GetByUUID: (uuid: string) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/v1/series/${uuid}`,
             /**
              * 
              * @param {string} seriesId
