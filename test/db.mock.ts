@@ -21,7 +21,6 @@ class FSDBMock {
 }
 
 mock.module('file-system-db', () => {
-
     console.log('--- Mocking file-system-db ---');
 
     return {
