@@ -41,7 +41,11 @@ describe('myLists', () => {
 
         const alien = unwatched.movies.find(item => item.uuid === alien_unwatched.uuid);
         expect(alien).toBeDefined();
-        expect(alien).toMatchObject(alien_unwatched);
+        expect(alien).toMatchObject({
+            ...alien_unwatched,
+            // timestamp in list is not the same as the one in the watchlist
+            created_at: expect.any(String),
+        });
 
         const the_triangle = unwatched.series.find(item => item.uuid === the_triangle_unwatched.uuid);
         expect(the_triangle).toBeDefined();
