@@ -24,4 +24,4 @@ beforeAll(async () => {
     setCache(PersistentStore);
 
     console.log('--- Initiating testing ---');
-})
+});
