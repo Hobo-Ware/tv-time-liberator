@@ -23,7 +23,7 @@ export async function favoriteList(userId: string, imdbResolver: typeof toIMDB =
     const favoritedSeries = series ?? [];
 
     const myMovies = await followedMovies({ userId, imdbResolver });
-    const mySeries = await followedSeries(userId, imdbResolver);
+    const mySeries = await followedSeries({ userId, imdbResolver });
 
     return {
         name: 'Favorites',

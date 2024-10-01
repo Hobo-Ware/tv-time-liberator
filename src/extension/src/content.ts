@@ -30,7 +30,10 @@ async function extract() {
     });
     download('movies.json', JSON.stringify(movies, null, 2));
 
-    const series = await followedSeries(user.login, imdb);
+    const series = await followedSeries({
+        userId: user.login,
+        imdbResolver: imdb
+    });
     download('series.json', JSON.stringify(series, null, 2));
 
     const favorites = await favoriteList(user.login, imdb);

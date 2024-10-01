@@ -14,7 +14,7 @@ describe.only('followedSeries', () => {
 
         setAuthorizationHeader(token);
 
-        const shows = await followedSeries(userId);
+        const shows = await followedSeries({ userId });
 
         expect(shows).toBeArray();
         expect(shows).toBeArrayOfSize(3);

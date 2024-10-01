@@ -15,7 +15,7 @@ export async function getSeries(id: string, imdbResolver: typeof toIMDB = toIMDB
     } = await request<SeriesResponse>(url)
         .then(response => response.data);
 
-    const seasons = await infoSeries(tvdb, imdbResolver);
+    const seasons = await infoSeries({ id: tvdb, imdbResolver });
 
     return {
         id: {

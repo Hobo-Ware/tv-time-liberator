@@ -38,8 +38,12 @@ const movies = await followedMovies({
 reporter.stop();
 await writeFile('.export/movies.json', JSON.stringify(movies, null, 4))
 
-console.log('Exporting series...');
-const series = await followedSeries(userId);
+reporter.start(1, 0, { title: 'Exporting series...' });
+const series = await followedSeries({
+    userId,
+    onProgress: ({ progress, title }) => reporter.update(progress, { title })
+});
+reporter.stop();
 await writeFile('.export/series.json', JSON.stringify(series, null, 4));
 
 console.log('Exporting favorites...');
