@@ -46,7 +46,7 @@ export async function myLists(userId: string, imdbResolver: typeof toIMDB = toIM
             }
 
             if (item.type === 'movie') {
-                const info = await followedMovies(userId, imdbResolver)
+                const info = await followedMovies({ userId, imdbResolver })
                     .then(r => r.find(movie => movie.uuid === item.uuid))
                     ?? await getMovie(item.uuid, imdbResolver);
 
