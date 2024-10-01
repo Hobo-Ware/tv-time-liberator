@@ -12,7 +12,7 @@ Frustrated with your data being held hostage by TV Time? This script will libera
 
 1. Clone the repository
 1. Run `bun install` to restore dependencies
-1. Configure the `.env` file with your TV Time username and password:
+1. Configure the `.env` (docs [here](https://dotenvx.com/docs/env-file)) file with your TV Time username and password:
     ```env
     TV_TIME_USERNAME=your_username
     TV_TIME_PASSWORD=your_password
