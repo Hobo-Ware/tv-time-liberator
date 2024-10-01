@@ -24,7 +24,10 @@ async function extract() {
 
     console.log('Extracting...');
 
-    const movies = await await followedMovies(user.login, imdb);
+    const movies = await await followedMovies({
+        userId: user.login,
+        imdbResolver: imdb
+    });
     download('movies.json', JSON.stringify(movies, null, 2));
 
     const series = await followedSeries(user.login, imdb);

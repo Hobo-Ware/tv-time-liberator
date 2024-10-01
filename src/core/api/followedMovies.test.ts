@@ -14,7 +14,7 @@ describe.only('followedMovies', () => {
 
         setAuthorizationHeader(token);
 
-        const movies = await followedMovies(userId);
+        const movies = await followedMovies({ userId });
 
         expect(movies).toBeArray();
         expect(movies).toBeArrayOfSize(2);
