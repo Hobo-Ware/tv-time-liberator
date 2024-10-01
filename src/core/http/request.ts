@@ -37,21 +37,25 @@ export async function request<T>(url: string, options: RequestOptions = { respon
                     ...authorizationHeader,
                     ...(options.headers || {}),
                 },
+            }).then(
+                res => options.responseType === 'json'
+                    ? res.json()
+                    : res.text()
+            ).then(response => {
+                if (response instanceof Object && 'status' in response && response.status === 'error') {
+                    return Promise.reject(response?.message);
+                }
+
+                return response;
             }),
             {
                 maxTry: 10,
                 delay: 3500,
-                onError: () => {
-                    console.log(`Retrying GET request to ${url}...`);
-                },
-            })
-            .then(
-                res => options.responseType === 'json'
-                    ? res.json()
-                    : res.text()
-            );
+            });
 
-        await cache.instance?.set(key, reponse);
+        if (reponse?.status !== 'error') {
+            await cache.instance?.set(key, reponse);
+        }
 
         return reponse;
     } catch (error: any) {
