@@ -4,47 +4,98 @@ import type { SeriesListResponse } from './models/SeriesListResponse';
 import type { Series } from '../types/Series';
 import { assertDefined } from '../utils/assertDefined';
 import { infoSeries } from './infoSeries';
-import { delay } from './delay';
 import { toIMDB } from './toIMDB';
+
+const SHOW_INCREMENT = .25;
+const SEASONS_INCREMENT = .75;
+
+type FollowedSeriesOptions = {
+    userId: string;
+    imdbResolver?: typeof toIMDB;
+    onProgress?: (progress: { progress: number; total: number; title: string }) => void;
+};
 
 /**
  * Retrieves a list of followed series.
  * @returns {Array} An array of series objects.
  */
-export async function followedSeries(userId: string, imdbResolver: typeof toIMDB = toIMDB): Promise<Series[]> {
+export async function followedSeries({
+    userId,
+    imdbResolver = toIMDB,
+    onProgress = () => { },
+}: FollowedSeriesOptions): Promise<Series[]> {
     const url = Resource.Get.Follows.Series(userId);
 
-    const series = await request<SeriesListResponse>(url)
-        .then(response => response.data.objects)
-        .then(objects => {
-            const mapped = objects
-                .map(async object => ({
-                    uuid: object.uuid,
-                    id: {
-                        tvdb: object.meta.id,
-                        imdb: await imdbResolver({ id: object.meta.id, type: 'series' }),
-                    },
-                    created_at: object.created_at,
-                    title: object.meta.name,
-                    status: assertDefined(object.filter.at(-1), 'Status not found.') as Series['status'],
-                }));
+    const seriesListResponse = await request<SeriesListResponse>(url);
+    const objects = seriesListResponse.data.objects;
 
-            return Promise.all(mapped);
+    const series: Series[] = [];
+
+    const progress = (() => {
+        let progress = 0;
+        const total = objects.length;
+
+        return {
+            done: () => {
+                progress = 1;
+                onProgress({
+                    progress: 1,
+                    total,
+                    title: 'Shows exported.',
+                });
+            },
+            increment: (by: number) => progress += by,
+            report: (title: string) => onProgress({
+                progress: progress / total,
+                total,
+                title,
+            }),
+        }
+    })();
+
+    for (let i = 0; i < objects.length; i++) {
+        const object = objects[i];
+        const title = object.meta.name;
+        progress.report(title);
+
+        const show: Series = {
+            uuid: object.uuid,
+            id: {
+                tvdb: object.meta.id,
+                imdb: await imdbResolver({ id: object.meta.id, type: 'series' }),
+            },
+            seasons: [],
+            created_at: object.created_at,
+            title,
+            status: assertDefined(object.filter.at(-1), 'Status not found.') as Series['status'],
+        };
+
+        progress.increment(SHOW_INCREMENT);
+        progress.report(title);
+
+        series.push(show);
+    }
+
+    const finalSeries: Series[] = [];
+    for (const show of series) {
+        progress.report(show.title);
+
+        const info = await infoSeries({
+            id: show.id.tvdb,
+            onProgress: ({ title, total }) => {
+                progress.increment(SEASONS_INCREMENT / total);
+                progress.report(`${show.title} - ${title}`);
+            },
+            imdbResolver
         });
 
-
-    const infoRequests = series
-        .map(async show => {
-            const info = await delay()
-                .then(() => infoSeries(show.id.tvdb, imdbResolver));
-
-            console.log(`Fetched info for ${show.title}.`);
-
-            return {
-                ...show,
-                seasons: info,
-            };
+        finalSeries.push({
+            ...show,
+            seasons: info,
         });
+    }
 
-    return Promise.all(infoRequests);
+    progress.done();
+
+    return finalSeries;
 }
