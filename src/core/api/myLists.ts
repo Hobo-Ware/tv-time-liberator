@@ -5,6 +5,7 @@ import { request } from '../http';
 import { getShow } from './getShow';
 import { getMovie } from './getMovie';
 import { toIMDB } from './toIMDB';
+import { MediaType } from '../types/MediaType';
 
 type MyListsOptions = {
     userId: string;
@@ -32,7 +33,7 @@ export async function myLists({
                         uuid: item.uuid,
                         title: item.name,
                         created_at: item.created_at,
-                        type: item.type
+                        type: item.type,
                     }))
             })));
 
@@ -67,7 +68,7 @@ export async function myLists({
         for (const item of list.items) {
             progress.report(item.title);
 
-            if (item.type === 'series') {
+            if (item.type === MediaType.Show) {
                 let previous = 0;
                 const info = await getShow({
                     id: item.uuid,
@@ -85,7 +86,7 @@ export async function myLists({
                 });
             }
 
-            if (item.type === 'movie') {
+            if (item.type === MediaType.Movie) {
                 const info = await getMovie({
                     id: item.uuid,
                     imdbResolver,
