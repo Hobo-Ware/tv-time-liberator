@@ -53,8 +53,7 @@ export async function followedShows({
         }
     })();
 
-    for (let i = 0; i < objects.length; i++) {
-        const object = objects[i];
+    for(const object of objects) {
         const title = object.meta.name;
         progress.report(title);
 

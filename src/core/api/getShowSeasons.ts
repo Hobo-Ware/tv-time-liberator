@@ -37,8 +37,7 @@ export async function getShowSeasons({
     })();
 
     const extended: Season[] = [];
-    for (let i = 0; i < seasons.length; i++) {
-        const season = seasons[i];
+    for (const season of seasons) {
         const episodes: Season['episodes'] = [];
 
         for (let j = 0; j < season.episodes.length; j++) {
