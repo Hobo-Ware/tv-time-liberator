@@ -3,15 +3,12 @@ import type { MoviesResponse } from './models/MoviesResponse';
 import type { Movie } from '../types/Movie';
 import { assertDefined } from '../utils/assertDefined';
 import { toIMDB } from './toIMDB';
+import { ProgressCallback, ProgressReporter } from '../utils/ProgressReporter';
 
 type FollowedMoviesOptions = {
     userId: string;
     imdbResolver?: typeof toIMDB;
-    onProgress?: ({ progress, title, total }: {
-        progress: number,
-        total: number,
-        title: string
-    }) => void;
+    onProgress?: ProgressCallback;
 }
 
 /**
@@ -27,27 +24,10 @@ export async function followedMovies({
     const movies = await request<MoviesResponse>(url)
         .then(response => response.data.objects);
 
-    const progress = (() => {
-        let progress = 0;
-        const total = movies.length;
-
-        return {
-            done: () => {
-                progress = 1;
-                onProgress({
-                    progress: 1,
-                    total,
-                    title: 'Movies exported.',
-                });
-            },
-            increment: (by: number) => progress += by,
-            report: (title: string) => onProgress({
-                progress: progress / total,
-                total,
-                title,
-            }),
-        }
-    })();
+    const progress = new ProgressReporter(
+        movies.length,
+        onProgress,
+    );
 
     const liberatedMovies: Movie[] = [];
 
@@ -81,7 +61,7 @@ export async function followedMovies({
         });
     }
 
-    progress.done();
-
+    progress.done('Movies exported.');
+    
     return liberatedMovies;
 }

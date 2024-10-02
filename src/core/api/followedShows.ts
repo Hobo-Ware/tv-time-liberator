@@ -5,6 +5,7 @@ import type { Show } from '../types/Show';
 import { assertDefined } from '../utils/assertDefined';
 import { getShowSeasons } from './getShowSeasons';
 import { toIMDB } from './toIMDB';
+import { ProgressCallback, ProgressReporter } from '../utils/ProgressReporter';
 
 const SHOW_INCREMENT = .25;
 const SEASONS_INCREMENT = .75;
@@ -12,7 +13,7 @@ const SEASONS_INCREMENT = .75;
 type FollowedShowsOptions = {
     userId: string;
     imdbResolver?: typeof toIMDB;
-    onProgress?: (progress: { progress: number; total: number; title: string }) => void;
+    onProgress?: ProgressCallback;
 };
 
 /**
@@ -31,29 +32,12 @@ export async function followedShows({
 
     const shows: Show[] = [];
 
-    const progress = (() => {
-        let progress = 0;
-        const total = objects.length;
+    const progress = new ProgressReporter(
+        objects.length,
+        onProgress,
+    );
 
-        return {
-            done: () => {
-                progress = 1;
-                onProgress({
-                    progress: 1,
-                    total,
-                    title: 'Shows exported.',
-                });
-            },
-            increment: (by: number) => progress += by,
-            report: (title: string) => onProgress({
-                progress: progress / total,
-                total,
-                title,
-            }),
-        }
-    })();
-
-    for(const object of objects) {
+    for (const object of objects) {
         const title = object.meta.name;
         progress.report(title);
 
@@ -84,9 +68,9 @@ export async function followedShows({
 
         const info = await getShowSeasons({
             id: show.id.tvdb,
-            onProgress: ({ title, total }) => {
+            onProgress: ({ message, total }) => {
                 progress.increment(SEASONS_INCREMENT / total);
-                progress.report(`${show.title} - ${title}`);
+                progress.report(`${show.title} - ${message}`);
             },
             imdbResolver
         });
@@ -97,7 +81,7 @@ export async function followedShows({
         });
     }
 
-    progress.done();
+    progress.done('Shows exported.');
 
     return liberatedShows;
 }
