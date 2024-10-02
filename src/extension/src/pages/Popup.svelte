@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from "../components/Button.svelte";
   import { extract } from "../request/topic/extract";
   import { verifyAuthorization } from "../request/topic/verifyAuthorization";
 
@@ -15,7 +16,8 @@
 <div>
   <h1>TV Time Liberator</h1>
 
-  <button disabled={!isAuthorized} on:click={extract}>Liberate</button>
+  <Button isDisabled={!isAuthorized} on:click={extract}>Liberate</Button>
+
   {#if isAuthorized}
     <span for="button">Liberation is one click away 👆</span>
   {:else}
