@@ -3,7 +3,7 @@ import { setAuthorizationHeader } from '../../core/http/setAuthorizationHeader';
 import { download } from './utils/download';
 import { listener } from './request/listener/listener';
 import { Topic } from './request/topic/Topic';
-import { imdb } from './request/topic/imdb';
+import { imdb as imdbResolver } from './request/topic/imdb';
 import { setCache } from '../../core/http';
 import { LocalStore } from './store';
 
@@ -24,28 +24,21 @@ async function extract() {
 
     console.log('Extracting...');
 
-    const movies = await await followedMovies({
+    const config = {
         userId: user.login,
-        imdbResolver: imdb
-    });
+        imdbResolver,
+    };
+
+    const movies = await followedMovies(config);
     download('movies.json', JSON.stringify(movies, null, 2));
 
-    const shows = await followedShows({
-        userId: user.login,
-        imdbResolver: imdb
-    });
+    const shows = await followedShows(config);
     download('shows.json', JSON.stringify(shows, null, 2));
 
-    const favorites = await favoriteList({
-        userId: user.login,
-        imdbResolver: imdb
-    });
+    const favorites = await favoriteList(config);
     download('favorites.json', JSON.stringify(favorites, null, 2));
 
-    const lists = await myLists({
-        userId: user.login,
-        imdbResolver: imdb
-    });
+    const lists = await myLists(config);
     download('lists.json', JSON.stringify(lists, null, 2));
 }
 
