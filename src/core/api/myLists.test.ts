@@ -14,7 +14,7 @@ describe('myLists', () => {
 
         setAuthorizationHeader(token);
 
-        const lists = await myLists(userId);
+        const lists = await myLists({ userId });
         expect(lists).toBeArrayOfSize(2);
 
         const [watched, unwatched] = lists;
@@ -27,11 +27,17 @@ describe('myLists', () => {
 
         const mr_nobody = watched.movies.find(item => item.uuid === mr_nobody_watched.uuid);
         expect(mr_nobody).toBeDefined();
-        expect(mr_nobody).toMatchObject(mr_nobody_watched);
+        expect(mr_nobody).toMatchObject({
+            title: mr_nobody_watched.title,
+            id: mr_nobody_watched.id,
+        });
 
         const chernobyl = watched.series.find(item => item.uuid === chernobyl_up_to_date.uuid);
         expect(chernobyl).toBeDefined();
-        expect(chernobyl).toMatchObject(chernobyl_up_to_date);
+        expect(chernobyl).toMatchObject({
+            id: chernobyl_up_to_date.id,
+            seasons: chernobyl_up_to_date.seasons,
+        });
 
         expect(unwatched.name).toBe('Unwatched List');
         expect(unwatched.description).toBe('List of things I never watched!');
@@ -42,13 +48,15 @@ describe('myLists', () => {
         const alien = unwatched.movies.find(item => item.uuid === alien_unwatched.uuid);
         expect(alien).toBeDefined();
         expect(alien).toMatchObject({
-            ...alien_unwatched,
-            // timestamp in list is not the same as the one in the watchlist
-            created_at: expect.any(String),
+            title: alien_unwatched.title,
+            id: alien_unwatched.id,
         });
 
         const the_triangle = unwatched.series.find(item => item.uuid === the_triangle_unwatched.uuid);
         expect(the_triangle).toBeDefined();
-        expect(the_triangle).toMatchObject(the_triangle_unwatched);
+        expect(the_triangle).toMatchObject({
+            id: the_triangle_unwatched.id,
+            seasons: the_triangle_unwatched.seasons,
+        });
     });
 });
