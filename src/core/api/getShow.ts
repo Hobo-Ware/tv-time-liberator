@@ -1,17 +1,14 @@
 import { request, Resource } from '../http';
 import { Show } from '../types/Show';
+import { ProgressCallback } from '../utils/ProgressReporter';
 import { getShowSeasons } from './getShowSeasons';
-import { ShowResponse } from './models/SeriesResponse';
+import { ShowResponse } from './models/ShowResponse';
 import { toIMDB } from './toIMDB';
 
 type GetSeriesOptions = {
     id: string;
     imdbResolver?: typeof toIMDB;
-    onProgress?: (progress: {
-        progress: number;
-        title: string,
-        total: number
-    }) => void;
+    onProgress?: ProgressCallback;
 }
 
 export async function getShow({

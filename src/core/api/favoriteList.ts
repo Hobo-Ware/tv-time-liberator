@@ -4,11 +4,12 @@ import { toIMDB } from './toIMDB';
 import { getMovie } from './getMovie';
 import type { List } from '../types/List';
 import { getShow } from './getShow';
+import { ProgressCallback, ProgressReporter } from '../utils/ProgressReporter';
 
 type FavoriteListOptions = {
     userId: string;
     imdbResolver?: typeof toIMDB;
-    onProgress?: (progress: { progress: number; total: number; title: string }) => void;
+    onProgress?: ProgressCallback;
 }
 
 /**
@@ -30,27 +31,10 @@ export async function favoriteList({
         .then(response => response.data.objects);
     const favoriteShow = show ?? [];
 
-    const progress = (() => {
-        const total = favoriteMovie.length + favoriteShow.length;
-        let progress = 0;
-
-        return {
-            done: () => {
-                progress = 1;
-                onProgress({
-                    progress: 1,
-                    total,
-                    title: 'Favorites exported.',
-                });
-            },
-            increment: (by: number) => progress += by,
-            report: (title: string) => onProgress({
-                progress: progress / total,
-                total,
-                title,
-            }),
-        }
-    })();
+    const progress = new ProgressReporter(
+        favoriteMovie.length + favoriteShow.length,
+        onProgress,
+    );
 
     const liberatedMovies: List['movies'] = [];
     for (const movie of favoriteMovie) {
@@ -70,14 +54,12 @@ export async function favoriteList({
     const liberatedShows: List['shows'] = [];
     for (const show of favoriteShow) {
         progress.report(show.name);
-        let previous = 0;
         const info = await getShow({
             id: show.uuid,
             imdbResolver,
-            onProgress: ({ progress: value, title }) => {
-                progress.increment(value - previous);
-                previous = value;
-                progress.report(`${show.name} - ${title}`);
+            onProgress: ({ value: { current, previous }, message }) => {
+                progress.increment(current - previous);
+                progress.report(`${show.name} - ${message}`);
             },
         });
 
@@ -87,7 +69,7 @@ export async function favoriteList({
         });
     }
 
-    progress.done();
+    progress.done('Favorites exported.');
     return {
         name: 'Favorites',
         description: 'Your favorite movies and shows.',

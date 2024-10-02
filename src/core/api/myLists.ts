@@ -6,11 +6,12 @@ import { getShow } from './getShow';
 import { getMovie } from './getMovie';
 import { toIMDB } from './toIMDB';
 import { MediaType } from '../types/MediaType';
+import { ProgressCallback, ProgressReporter } from '../utils/ProgressReporter';
 
 type MyListsOptions = {
     userId: string;
     imdbResolver?: typeof toIMDB;
-    onProgress?: (progress: { progress: number; total: number; title: string }) => void;
+    onProgress?: ProgressCallback;
 }
 
 export async function myLists({
@@ -38,27 +39,10 @@ export async function myLists({
             })));
 
 
-    const progress = (() => {
-        const total = result.reduce((acc, list) => acc + list.items.length, 0);
-        let progress = 0;
-
-        return {
-            done: () => {
-                progress = 1;
-                onProgress({
-                    progress: 1,
-                    total: 1,
-                    title: 'Lists exported.',
-                });
-            },
-            increment: (by: number) => progress += by,
-            report: (title: string) => onProgress({
-                progress: progress / total,
-                total: 1,
-                title,
-            }),
-        }
-    })();
+    const progress = new ProgressReporter(
+        result.reduce((acc, list) => acc + list.items.length, 0),
+        onProgress,
+    );
 
     const lists: List[] = [];
 
@@ -69,14 +53,12 @@ export async function myLists({
             progress.report(item.title);
 
             if (item.type === MediaType.Show) {
-                let previous = 0;
                 const info = await getShow({
                     id: item.uuid,
                     imdbResolver,
-                    onProgress: ({ progress: value, title }) => {
-                        progress.increment(value - previous);
-                        previous = value;
-                        progress.report(title);
+                    onProgress: ({ value: { current, previous }, message }) => {
+                        progress.increment(current - previous);
+                        progress.report(message);
                     },
                 });
 
@@ -112,7 +94,7 @@ export async function myLists({
         });
     }
 
-    progress.done();
+    progress.done('Lists exported.');
 
     return lists;
 }
