@@ -23,7 +23,7 @@ describe('myLists', () => {
         expect(watched.description).toBe('Everything I ever wanted.');
         expect(watched.is_public).toBeTrue();
         expect(watched.movies).toBeArrayOfSize(1);
-        expect(watched.series).toBeArrayOfSize(1);
+        expect(watched.shows).toBeArrayOfSize(1);
 
         const mr_nobody = watched.movies.find(item => item.uuid === mr_nobody_watched.uuid);
         expect(mr_nobody).toBeDefined();
@@ -32,7 +32,7 @@ describe('myLists', () => {
             id: mr_nobody_watched.id,
         });
 
-        const chernobyl = watched.series.find(item => item.uuid === chernobyl_up_to_date.uuid);
+        const chernobyl = watched.shows.find(item => item.uuid === chernobyl_up_to_date.uuid);
         expect(chernobyl).toBeDefined();
         expect(chernobyl).toMatchObject({
             id: chernobyl_up_to_date.id,
@@ -43,7 +43,7 @@ describe('myLists', () => {
         expect(unwatched.description).toBe('List of things I never watched!');
 
         expect(unwatched.movies).toBeArrayOfSize(1);
-        expect(unwatched.series).toBeArrayOfSize(1);
+        expect(unwatched.shows).toBeArrayOfSize(1);
 
         const alien = unwatched.movies.find(item => item.uuid === alien_unwatched.uuid);
         expect(alien).toBeDefined();
@@ -52,7 +52,7 @@ describe('myLists', () => {
             id: alien_unwatched.id,
         });
 
-        const the_triangle = unwatched.series.find(item => item.uuid === the_triangle_unwatched.uuid);
+        const the_triangle = unwatched.shows.find(item => item.uuid === the_triangle_unwatched.uuid);
         expect(the_triangle).toBeDefined();
         expect(the_triangle).toMatchObject({
             id: the_triangle_unwatched.id,

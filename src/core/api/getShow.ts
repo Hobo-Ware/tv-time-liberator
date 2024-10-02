@@ -1,7 +1,7 @@
 import { request, Resource } from '../http';
-import { Series } from '../types/Series';
-import { infoSeries } from './infoSeries';
-import { SeriesResponse } from './models/SeriesResponse';
+import { Show } from '../types/Show';
+import { getShowSeasons } from './getShowSeasons';
+import { ShowResponse } from './models/SeriesResponse';
 import { toIMDB } from './toIMDB';
 
 type GetSeriesOptions = {
@@ -14,22 +14,22 @@ type GetSeriesOptions = {
     }) => void;
 }
 
-export async function getSeries({
+export async function getShow({
     id,
     imdbResolver = toIMDB,
     onProgress = () => { },
-}: GetSeriesOptions): Promise<Omit<Series, 'created_at' | 'status'>> {
-    const url = Resource.Get.Series.GetByUUID(id);
+}: GetSeriesOptions): Promise<Omit<Show, 'created_at' | 'status'>> {
+    const url = Resource.Get.Shows.GetByUUID(id);
 
     const {
         id: tvdb,
         imdb_id: imdb,
         uuid,
         name: title,
-    } = await request<SeriesResponse>(url)
+    } = await request<ShowResponse>(url)
         .then(response => response.data);
 
-    const seasons = await infoSeries({
+    const seasons = await getShowSeasons({
         id: tvdb,
         imdbResolver,
         onProgress,

@@ -1,4 +1,4 @@
-import { followedMovies, followedSeries, favoriteList, myLists } from '../../core/api';
+import { followedMovies, followedShows, favoriteList, myLists } from '../../core/api';
 import { setAuthorizationHeader } from '../../core/http/setAuthorizationHeader';
 import { download } from './utils/download';
 import { listener } from './request/listener/listener';
@@ -30,11 +30,11 @@ async function extract() {
     });
     download('movies.json', JSON.stringify(movies, null, 2));
 
-    const series = await followedSeries({
+    const shows = await followedShows({
         userId: user.login,
         imdbResolver: imdb
     });
-    download('series.json', JSON.stringify(series, null, 2));
+    download('shows.json', JSON.stringify(shows, null, 2));
 
     const favorites = await favoriteList({
         userId: user.login,

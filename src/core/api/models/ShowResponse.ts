@@ -1,6 +1,6 @@
 import { IMDBReference } from '../../types/IMDBReference';
 
-export interface SeriesResponse {
+export interface ShowResponse {
     data: Show;
 }
 

@@ -1,6 +1,5 @@
-import { Favorite } from './Favorite';
-import { Movie } from './Movie';
-import { Series } from './Series';
+import type { Movie } from './Movie';
+import type { Show } from './Show';
 
 export type ListItem = {
     uuid: string;
@@ -13,6 +12,6 @@ export type List = {
     name: string;
     description: string;
     is_public: boolean;
-    series: Array<Omit<Series, 'created_at' | 'status'> & { added_at: string }>;
+    shows: Array<Omit<Show, 'created_at' | 'status'> & { added_at: string }>;
     movies: Array<Omit<Movie, 'created_at' | 'is_watched'> & { added_at: string }>;
 }
