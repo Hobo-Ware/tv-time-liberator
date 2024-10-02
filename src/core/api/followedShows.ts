@@ -1,35 +1,35 @@
 
 import { request, Resource } from '../http';
-import type { SeriesListResponse } from './models/SeriesListResponse';
-import type { Series } from '../types/Series';
+import type { ShowsListResponse } from './models/ShowsListResponse';
+import type { Show } from '../types/Show';
 import { assertDefined } from '../utils/assertDefined';
-import { infoSeries } from './infoSeries';
+import { getShowSeasons } from './getShowSeasons';
 import { toIMDB } from './toIMDB';
 
 const SHOW_INCREMENT = .25;
 const SEASONS_INCREMENT = .75;
 
-type FollowedSeriesOptions = {
+type FollowedShowsOptions = {
     userId: string;
     imdbResolver?: typeof toIMDB;
     onProgress?: (progress: { progress: number; total: number; title: string }) => void;
 };
 
 /**
- * Retrieves a list of followed series.
- * @returns {Array} An array of series objects.
+ * Retrieves a list of followed shows.
+ * @returns {Array} An array of shows objects.
  */
-export async function followedSeries({
+export async function followedShows({
     userId,
     imdbResolver = toIMDB,
     onProgress = () => { },
-}: FollowedSeriesOptions): Promise<Series[]> {
-    const url = Resource.Get.Follows.Series(userId);
+}: FollowedShowsOptions): Promise<Show[]> {
+    const url = Resource.Get.Follows.Shows(userId);
 
-    const seriesListResponse = await request<SeriesListResponse>(url);
-    const objects = seriesListResponse.data.objects;
+    const showsResponse = await request<ShowsListResponse>(url);
+    const objects = showsResponse.data.objects;
 
-    const series: Series[] = [];
+    const shows: Show[] = [];
 
     const progress = (() => {
         let progress = 0;
@@ -58,29 +58,32 @@ export async function followedSeries({
         const title = object.meta.name;
         progress.report(title);
 
-        const show: Series = {
+        const show: Show = {
             uuid: object.uuid,
             id: {
                 tvdb: object.meta.id,
-                imdb: await imdbResolver({ id: object.meta.id, type: 'series' }),
+                imdb: await imdbResolver({
+                    id: object.meta.id,
+                    type: 'show'
+                }),
             },
             seasons: [],
             created_at: object.created_at,
             title,
-            status: assertDefined(object.filter.at(-1), 'Status not found.') as Series['status'],
+            status: assertDefined(object.filter.at(-1), 'Status not found.') as Show['status'],
         };
 
         progress.increment(SHOW_INCREMENT);
         progress.report(title);
 
-        series.push(show);
+        shows.push(show);
     }
 
-    const finalSeries: Series[] = [];
-    for (const show of series) {
+    const liberatedShows: Show[] = [];
+    for (const show of shows) {
         progress.report(show.title);
 
-        const info = await infoSeries({
+        const info = await getShowSeasons({
             id: show.id.tvdb,
             onProgress: ({ title, total }) => {
                 progress.increment(SEASONS_INCREMENT / total);
@@ -89,7 +92,7 @@ export async function followedSeries({
             imdbResolver
         });
 
-        finalSeries.push({
+        liberatedShows.push({
             ...show,
             seasons: info,
         });
@@ -97,5 +100,5 @@ export async function followedSeries({
 
     progress.done();
 
-    return finalSeries;
+    return liberatedShows;
 }

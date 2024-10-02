@@ -3,7 +3,7 @@ import type { FavoriteResponse } from './models/FavoriteResponse';
 import { toIMDB } from './toIMDB';
 import { getMovie } from './getMovie';
 import type { List } from '../types/List';
-import { getSeries } from './getSeries';
+import { getShow } from './getShow';
 
 type FavoriteListOptions = {
     userId: string;
@@ -23,15 +23,15 @@ export async function favoriteList({
     const movieUrl = Resource.Get.Favorites.Movies(userId);
     const movies = await request<FavoriteResponse>(movieUrl)
         .then(response => response.data.objects);
-    const favoritedMovies = movies ?? [];
+    const favoriteMovie = movies ?? [];
 
-    const seriesUrl = Resource.Get.Favorites.Series(userId);
-    const series = await request<FavoriteResponse>(seriesUrl)
+    const showUrl = Resource.Get.Favorites.Shows(userId);
+    const show = await request<FavoriteResponse>(showUrl)
         .then(response => response.data.objects);
-    const favoritedSeries = series ?? [];
+    const favoriteShow = show ?? [];
 
     const progress = (() => {
-        const total = favoritedMovies.length + favoritedSeries.length;
+        const total = favoriteMovie.length + favoriteShow.length;
         let progress = 0;
 
         return {
@@ -53,7 +53,7 @@ export async function favoriteList({
     })();
 
     const liberatedMovies: List['movies'] = [];
-    for (const movie of favoritedMovies) {
+    for (const movie of favoriteMovie) {
         progress.report(movie.name);
 
         const info = await getMovie({
@@ -67,11 +67,11 @@ export async function favoriteList({
         progress.increment(1);
     }
 
-    const liberatedSeries: List['series'] = [];
-    for (const show of favoritedSeries) {
+    const liberatedShows: List['shows'] = [];
+    for (const show of favoriteShow) {
         progress.report(show.name);
         let previous = 0;
-        const info = await getSeries({
+        const info = await getShow({
             id: show.uuid,
             imdbResolver,
             onProgress: ({ progress: value, title }) => {
@@ -81,7 +81,7 @@ export async function favoriteList({
             },
         });
 
-        liberatedSeries.push({
+        liberatedShows.push({
             ...info,
             added_at: show.created_at,
         });
@@ -90,9 +90,9 @@ export async function favoriteList({
     progress.done();
     return {
         name: 'Favorites',
-        description: 'Your favorite movies and series.',
+        description: 'Your favorite movies and shows.',
         is_public: true,
         movies: liberatedMovies,
-        series: liberatedSeries,
+        shows: liberatedShows,
     }
 }   

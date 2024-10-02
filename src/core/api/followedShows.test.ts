@@ -2,10 +2,10 @@ import { describe, it, expect } from 'bun:test';
 import { login } from '../../cli/login';
 import { assertDefined } from '../utils/assertDefined';
 import { setAuthorizationHeader } from '../http/setAuthorizationHeader';
-import { followedSeries } from './followedSeries';
+import { followedShows } from './followedShows';
 import { chernobyl_up_to_date, house_usher_continuing, station_eleven_stopped } from '../../.test/data';
 
-describe.only('followedSeries', () => {
+describe.only('followedShows', () => {
     it('should fetch followed movies', async () => {
         const username = assertDefined(process.env.TV_TIME_TEST_USERNAME, 'TV_TIME_TEST_USERNAME not defined.');
         const password = assertDefined(process.env.TV_TIME_TEST_PASSWORD, 'TV_TIME_TEST_PASSWORD not defined.');
@@ -14,7 +14,7 @@ describe.only('followedSeries', () => {
 
         setAuthorizationHeader(token);
 
-        const shows = await followedSeries({ userId });
+        const shows = await followedShows({ userId });
 
         expect(shows).toBeArray();
         expect(shows).toBeArrayOfSize(3);

@@ -16,7 +16,7 @@ describe('favoriteList', () => {
 
         const favorites = await favoriteList({ userId });
 
-        expect(favorites.series).toBeArrayOfSize(1);
+        expect(favorites.shows).toBeArrayOfSize(1);
         expect(favorites.movies).toBeArrayOfSize(1);
 
         const mr_nobody = favorites.movies.find(favorite => favorite.uuid === mr_nobody_watched.uuid);
@@ -26,7 +26,7 @@ describe('favoriteList', () => {
             id: mr_nobody_watched.id,
         });
 
-        const chernobyl = favorites.series.find(favorite => favorite.uuid === chernobyl_up_to_date.uuid);
+        const chernobyl = favorites.shows.find(favorite => favorite.uuid === chernobyl_up_to_date.uuid);
         expect(chernobyl).toBeDefined();
         expect(chernobyl).toMatchObject({
             id: chernobyl_up_to_date.id,
