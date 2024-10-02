@@ -1,16 +1,13 @@
 import { request, Resource } from '../http';
 import type { Season } from '../types/Season';
+import { ProgressCallback, ProgressReporter } from '../utils/ProgressReporter';
 import type { ShowInfoResponse } from './models/ShowInfoResponse';
 import { toIMDB } from './toIMDB';
 
 type SeriesInfoOptions = {
     id: number;
-    onProgress?: (progress: {
-        progress: number;
-        title: string,
-        total: number
-    }) => void;
     imdbResolver?: typeof toIMDB;
+    onProgress?: ProgressCallback;
 };
 
 export async function getShowSeasons({
@@ -22,19 +19,10 @@ export async function getShowSeasons({
 
     const { seasons } = await request<ShowInfoResponse>(url);
 
-    const progress = (() => {
-        let progress = 0;
-        const total = seasons.reduce((acc, season) => acc + season.episodes.length, 0);
-
-        return {
-            increment: (by: number) => progress += by,
-            report: (title: string) => onProgress({
-                total,
-                progress: progress / total,
-                title,
-            }),
-        }
-    })();
+    const progress = new ProgressReporter(
+        seasons.reduce((acc, season) => acc + season.episodes.length, 0),
+        onProgress,
+    );
 
     const extended: Season[] = [];
     for (const season of seasons) {
@@ -68,5 +56,6 @@ export async function getShowSeasons({
         extended.push(extendedSeason);
     }
 
+    progress.done('Show seasons exported.');
     return extended;
 }

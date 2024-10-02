@@ -6,7 +6,11 @@ import { setCache } from '../core/http';
 import { PersistentStore } from './store';
 import progress from 'cli-progress';
 
-const reporter = new progress.SingleBar({ format: ' {bar} {percentage}% | {title}', }, progress.Presets.shades_classic);
+const reporter = new progress.SingleBar({
+    format: '{bar} {percentage}% | {category} \t| ETA: {eta}s | {message} ',
+    autopadding: true,
+    barCompleteChar: '\u2588',
+}, progress.Presets.shades_classic);
 
 const username = process.env.TV_TIME_USERNAME;
 if (!username) {
@@ -28,34 +32,34 @@ setCache(PersistentStore);
 const exportDir = '.export';
 await mkdir(exportDir, { recursive: true });
 
-reporter.start(1, 0, { title: 'Exporting movies...' });
+reporter.start(1, 0, { category: 'Movies' });
 const movies = await followedMovies({
     userId,
-    onProgress: ({ progress, title }) => reporter.update(progress, { title }),
+    onProgress: ({ value: { current }, message }) => reporter.update(current, { message }),
 });
 reporter.stop();
 await writeFile('.export/movies.json', JSON.stringify(movies, null, 4))
 
-reporter.start(1, 0, { title: 'Exporting shows...' });
+reporter.start(1, 0, { category: 'Shows' });
 const shows = await followedShows({
     userId,
-    onProgress: ({ progress, title }) => reporter.update(progress, { title })
+    onProgress: ({ value: { current }, message }) => reporter.update(current, { message }),
 });
 reporter.stop();
 await writeFile('.export/shows.json', JSON.stringify(shows, null, 4));
 
-reporter.start(1, 0, { title: 'Exporting favorites...' });
+reporter.start(1, 0, { category: 'Faves' });
 const favorites = await favoriteList({
     userId,
-    onProgress: ({ progress, title }) => reporter.update(progress, { title })
+    onProgress: ({ value: { current }, message }) => reporter.update(current, { message }),
 });
 reporter.stop();
 await writeFile('.export/favorites.json', JSON.stringify(favorites, null, 2));
 
-reporter.start(1, 0, { title: 'Exporting lists...' });
+reporter.start(1, 0, { category: 'Lists' });
 const lists = await myLists({
     userId,
-    onProgress: ({ progress, title }) => reporter.update(progress, { title })
+    onProgress: ({ value: { current }, message }) => reporter.update(current, { message }),
 });
 reporter.stop();
 await writeFile('.export/lists.json', JSON.stringify(lists, null, 2));
