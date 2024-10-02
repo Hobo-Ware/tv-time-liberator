@@ -1,4 +1,4 @@
-export interface SeriesInfoResponse {
+export interface ShowInfoResponse {
     seasons: Season[];
     id: number;
     name: string;

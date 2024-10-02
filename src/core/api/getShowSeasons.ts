@@ -1,6 +1,6 @@
 import { request, Resource } from '../http';
 import type { Season } from '../types/Season';
-import type { SeriesInfoResponse } from './models/SeriesInfoResponse';
+import type { ShowInfoResponse } from './models/ShowInfoResponse';
 import { toIMDB } from './toIMDB';
 
 type SeriesInfoOptions = {
@@ -13,14 +13,14 @@ type SeriesInfoOptions = {
     imdbResolver?: typeof toIMDB;
 };
 
-export async function infoSeries({
+export async function getShowSeasons({
     id,
     imdbResolver = toIMDB,
     onProgress = () => { },
 }: SeriesInfoOptions): Promise<Season[]> {
-    const url = Resource.Get.Series.Info(id);
+    const url = Resource.Get.Shows.Info(id);
 
-    const { seasons } = await request<SeriesInfoResponse>(url);
+    const { seasons } = await request<ShowInfoResponse>(url);
 
     const progress = (() => {
         let progress = 0;

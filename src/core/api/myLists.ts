@@ -2,7 +2,7 @@ import { Resource } from '../http/Resource';
 import type { ListsResponse } from './models/ListsResponse';
 import type { List } from '../types/List';
 import { request } from '../http';
-import { getSeries } from './getSeries';
+import { getShow } from './getShow';
 import { getMovie } from './getMovie';
 import { toIMDB } from './toIMDB';
 
@@ -62,14 +62,14 @@ export async function myLists({
     const lists: List[] = [];
 
     for (const list of result) {
-        const series: List['series'] = [];
+        const shows: List['shows'] = [];
         const movies: List['movies'] = [];
         for (const item of list.items) {
             progress.report(item.title);
 
             if (item.type === 'series') {
                 let previous = 0;
-                const info = await getSeries({
+                const info = await getShow({
                     id: item.uuid,
                     imdbResolver,
                     onProgress: ({ progress: value, title }) => {
@@ -79,7 +79,7 @@ export async function myLists({
                     },
                 });
 
-                series.push({
+                shows.push({
                     ...info,
                     added_at: item.created_at
                 });
@@ -106,7 +106,7 @@ export async function myLists({
             name: list.name,
             description: list.description,
             is_public: list.is_public,
-            series,
+            shows,
             movies,
         });
     }

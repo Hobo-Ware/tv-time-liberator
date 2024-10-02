@@ -1,4 +1,4 @@
-import { followedMovies, followedSeries, favoriteList, myLists } from '../core/api';
+import { followedMovies, followedShows, favoriteList, myLists } from '../core/api';
 import { writeFile, mkdir } from 'fs/promises';
 import { login } from './login';
 import { setAuthorizationHeader } from '../core/http/setAuthorizationHeader';
@@ -36,13 +36,13 @@ const movies = await followedMovies({
 reporter.stop();
 await writeFile('.export/movies.json', JSON.stringify(movies, null, 4))
 
-reporter.start(1, 0, { title: 'Exporting series...' });
-const series = await followedSeries({
+reporter.start(1, 0, { title: 'Exporting shows...' });
+const shows = await followedShows({
     userId,
     onProgress: ({ progress, title }) => reporter.update(progress, { title })
 });
 reporter.stop();
-await writeFile('.export/series.json', JSON.stringify(series, null, 4));
+await writeFile('.export/shows.json', JSON.stringify(shows, null, 4));
 
 reporter.start(1, 0, { title: 'Exporting favorites...' });
 const favorites = await favoriteList({

@@ -1,7 +1,7 @@
 import { MediaIdentifier } from './MediaIdentifier';
 import { Season } from './Season';
 
-export type Series = {
+export type Show = {
     id: MediaIdentifier;
     uuid: string
     title: string;

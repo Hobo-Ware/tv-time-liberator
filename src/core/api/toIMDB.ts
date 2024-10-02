@@ -18,7 +18,7 @@ async function parseHtml(html: string): Promise<HTMLElement> {
 
 export type DereferrerOptions = {
     id: number;
-    type: 'movie' | 'series';
+    type: 'movie' | 'show';
 } | {
     showId: number;
     episodeId: number;
@@ -29,7 +29,7 @@ async function dereferrer(options: DereferrerOptions): Promise<string> {
     const { type } = options;
 
     if (type === 'episode') {
-        const response = await fetch(await dereferrer({ id: options.showId, type: 'series' }), { method: 'HEAD' });
+        const response = await fetch(await dereferrer({ id: options.showId, type: 'show' }), { method: 'HEAD' });
         const location = response.url;
         return `${location}/episodes/${options.episodeId}`;
     }
