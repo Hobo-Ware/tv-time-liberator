@@ -1,9 +1,7 @@
-import { followedMovies, followedSeries } from '../core/api';
+import { followedMovies, followedSeries, favoriteList, myLists } from '../core/api';
 import { writeFile, mkdir } from 'fs/promises';
 import { login } from './login';
 import { setAuthorizationHeader } from '../core/http/setAuthorizationHeader';
-import { favoriteList } from '../core/api/favoriteList';
-import { myLists } from '../core/api/myLists';
 import { setCache } from '../core/http';
 import { PersistentStore } from './store';
 import progress from 'cli-progress';
@@ -46,10 +44,18 @@ const series = await followedSeries({
 reporter.stop();
 await writeFile('.export/series.json', JSON.stringify(series, null, 4));
 
-console.log('Exporting favorites...');
-const favorites = await favoriteList(userId);
+reporter.start(1, 0, { title: 'Exporting favorites...' });
+const favorites = await favoriteList({
+    userId,
+    onProgress: ({ progress, title }) => reporter.update(progress, { title })
+});
+reporter.stop();
 await writeFile('.export/favorites.json', JSON.stringify(favorites, null, 2));
 
-console.log('Exporting lists...');
-const lists = await myLists(userId);
+reporter.start(1, 0, { title: 'Exporting lists...' });
+const lists = await myLists({
+    userId,
+    onProgress: ({ progress, title }) => reporter.update(progress, { title })
+});
+reporter.stop();
 await writeFile('.export/lists.json', JSON.stringify(lists, null, 2));

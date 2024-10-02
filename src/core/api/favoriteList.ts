@@ -1,17 +1,25 @@
 import { request, Resource } from '../http';
 import type { FavoriteResponse } from './models/FavoriteResponse';
-import { followedMovies } from './followedMovies';
-import { followedSeries } from './followedSeries';
 import { toIMDB } from './toIMDB';
 import { getMovie } from './getMovie';
 import type { List } from '../types/List';
 import { getSeries } from './getSeries';
 
+type FavoriteListOptions = {
+    userId: string;
+    imdbResolver?: typeof toIMDB;
+    onProgress?: (progress: { progress: number; total: number; title: string }) => void;
+}
+
 /**
  * Retrieves a list of favorites.
  * @returns {Array} An array of movie objects.
  */
-export async function favoriteList(userId: string, imdbResolver: typeof toIMDB = toIMDB): Promise<List> {
+export async function favoriteList({
+    userId,
+    imdbResolver = toIMDB,
+    onProgress = () => { },
+}: FavoriteListOptions): Promise<List> {
     const movieUrl = Resource.Get.Favorites.Movies(userId);
     const movies = await request<FavoriteResponse>(movieUrl)
         .then(response => response.data.objects);
@@ -22,31 +30,69 @@ export async function favoriteList(userId: string, imdbResolver: typeof toIMDB =
         .then(response => response.data.objects);
     const favoritedSeries = series ?? [];
 
-    const myMovies = await followedMovies({ userId, imdbResolver });
-    const mySeries = await followedSeries({ userId, imdbResolver });
+    const progress = (() => {
+        const total = favoritedMovies.length + favoritedSeries.length;
+        let progress = 0;
 
+        return {
+            done: () => {
+                progress = 1;
+                onProgress({
+                    progress: 1,
+                    total,
+                    title: 'Favorites exported.',
+                });
+            },
+            increment: (by: number) => progress += by,
+            report: (title: string) => onProgress({
+                progress: progress / total,
+                total,
+                title,
+            }),
+        }
+    })();
+
+    const liberatedMovies: List['movies'] = [];
+    for (const movie of favoritedMovies) {
+        progress.report(movie.name);
+
+        const info = await getMovie({
+            id: movie.uuid,
+            imdbResolver,
+        });
+        liberatedMovies.push({
+            ...info,
+            added_at: movie.created_at,
+        });
+        progress.increment(1);
+    }
+
+    const liberatedSeries: List['series'] = [];
+    for (const show of favoritedSeries) {
+        progress.report(show.name);
+        let previous = 0;
+        const info = await getSeries({
+            id: show.uuid,
+            imdbResolver,
+            onProgress: ({ progress: value, title }) => {
+                progress.increment(value - previous);
+                previous = value;
+                progress.report(`${show.name} - ${title}`);
+            },
+        });
+
+        liberatedSeries.push({
+            ...info,
+            added_at: show.created_at,
+        });
+    }
+
+    progress.done();
     return {
         name: 'Favorites',
         description: 'Your favorite movies and series.',
         is_public: true,
-        movies: await Promise.all(
-            favoritedMovies.map(async movie => {
-                const info = myMovies.find(m => m.uuid === movie.uuid) ?? await getMovie(movie.uuid, imdbResolver);
-                return {
-                    ...info,
-                    added_at: movie.created_at,
-                }
-            })
-        ),
-        series: await Promise.all(
-            favoritedSeries.map(async show => {
-                const info = mySeries.find(s => s.uuid === show.uuid) ?? await getSeries(show.uuid, imdbResolver);
-
-                return {
-                    ...info,
-                    added_at: show.created_at
-                }
-            })
-        )
+        movies: liberatedMovies,
+        series: liberatedSeries,
     }
 }   
