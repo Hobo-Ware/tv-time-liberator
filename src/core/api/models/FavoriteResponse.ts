@@ -1,3 +1,5 @@
+import { MediaType } from '../../types/MediaType';
+
 export interface FavoriteResponse {
     data: Favorites;
 }
@@ -9,7 +11,7 @@ interface Favorites {
 interface Favorite {
     uuid: string;
     id: number;
-    type: 'series' | 'movie';
+    type: MediaType;
     created_at: string;
     name: string;
 }
