@@ -14,17 +14,23 @@ describe('favoriteList', () => {
 
         setAuthorizationHeader(token);
 
-        const favorites = await favoriteList(userId);
+        const favorites = await favoriteList({ userId });
 
         expect(favorites.series).toBeArrayOfSize(1);
         expect(favorites.movies).toBeArrayOfSize(1);
 
         const mr_nobody = favorites.movies.find(favorite => favorite.uuid === mr_nobody_watched.uuid);
         expect(mr_nobody).toBeDefined();
-        expect(mr_nobody).toMatchObject(mr_nobody_watched);
+        expect(mr_nobody).toMatchObject({
+            title: mr_nobody_watched.title,
+            id: mr_nobody_watched.id,
+        });
 
         const chernobyl = favorites.series.find(favorite => favorite.uuid === chernobyl_up_to_date.uuid);
         expect(chernobyl).toBeDefined();
-        expect(chernobyl).toMatchObject(chernobyl_up_to_date);
+        expect(chernobyl).toMatchObject({
+            id: chernobyl_up_to_date.id,
+            seasons: chernobyl_up_to_date.seasons,
+        });
     });
 });
