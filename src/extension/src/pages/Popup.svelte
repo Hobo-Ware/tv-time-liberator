@@ -19,9 +19,9 @@
   <Button isDisabled={!isAuthorized} on:click={extract}>Liberate</Button>
 
   {#if isAuthorized}
-    <span for="button">Liberation is one click away 👆</span>
+    <label for="button">Liberation is one click away 👆</label>
   {:else}
-    <span for="button">Log into TV Time to liberate your data!</span>
+    <label for="button">Log into TV Time to liberate your data!</label>
   {/if}
 </div>
 
