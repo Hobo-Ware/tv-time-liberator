@@ -17,6 +17,7 @@ describe('ProgressReporter', () => {
                 current: 0.1,
                 previous: 0,
             },
+            estimated: expect.any(Number),
             total: 10,
             message: 'First step',
         });
@@ -28,6 +29,7 @@ describe('ProgressReporter', () => {
                 current: 0.5,
                 previous: 0.1,
             },
+            estimated: expect.any(Number),
             total: 10,
             message: 'Second step',
         });
@@ -39,6 +41,7 @@ describe('ProgressReporter', () => {
                 current: 1,
                 previous: 0.5,
             },
+            estimated: expect.any(Number),
             total: 10,
             message: 'Third step',
         });
@@ -59,6 +62,7 @@ describe('ProgressReporter', () => {
                 current: 1,
                 previous: 0,
             },
+            estimated: expect.any(Number),
             total: 10,
             message: 'Done',
         });
