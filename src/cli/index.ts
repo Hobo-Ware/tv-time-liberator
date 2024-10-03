@@ -7,7 +7,7 @@ import { PersistentStore } from './store';
 import progress from 'cli-progress';
 
 const reporter = new progress.SingleBar({
-    format: '{bar} {percentage}% | {category} \t| ETA: {eta}s | {message} ',
+    format: '{bar} {percentage}% | {category} \t| ETA: {estimated}s | {message} ',
     autopadding: true,
     barCompleteChar: '\u2588',
 }, progress.Presets.shades_classic);
@@ -34,25 +34,30 @@ await mkdir(exportDir, { recursive: true });
 
 const config = {
     userId,
-    onProgress: ({ value: { current }, message }) => reporter.update(current, { message }),
+    onProgress: ({ value: { current }, message, estimated }) => reporter.update(current, { message, estimated }),
 };
 
-reporter.start(1, 0, { category: 'Movies' });
+const reporterDefaultPayload = {
+    estimated: 0,
+    message: '',
+}
+
+reporter.start(1, 0, { category: 'Movies', ...reporterDefaultPayload });
 const movies = await followedMovies(config);
 reporter.stop();
 await writeFile('.export/movies.json', JSON.stringify(movies, null, 4))
 
-reporter.start(1, 0, { category: 'Shows' });
+reporter.start(1, 0, { category: 'Shows', ...reporterDefaultPayload });
 const shows = await followedShows(config);
 reporter.stop();
 await writeFile('.export/shows.json', JSON.stringify(shows, null, 4));
 
-reporter.start(1, 0, { category: 'Faves' });
+reporter.start(1, 0, { category: 'Faves', ...reporterDefaultPayload });
 const favorites = await favoriteList(config);
 reporter.stop();
 await writeFile('.export/favorites.json', JSON.stringify(favorites, null, 2));
 
-reporter.start(1, 0, { category: 'Lists' });
+reporter.start(1, 0, { category: 'Lists', ...reporterDefaultPayload });
 const lists = await myLists(config);
 reporter.stop();
 await writeFile('.export/lists.json', JSON.stringify(lists, null, 2));
