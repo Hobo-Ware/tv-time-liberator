@@ -1,18 +1,13 @@
-export type ProgressCallback = ({
-    value: {
-        current,
-        previous,
-    },
-    total,
-    message,
-}: {
+export type ProgressReport = {
     value: {
         current: number;
         previous: number;
     };
     total: number;
     message: string;
-}) => void;
+};
+
+export type ProgressCallback = (report: ProgressReport) => void;
 
 export class ProgressReporter {
     private _progress = 0;

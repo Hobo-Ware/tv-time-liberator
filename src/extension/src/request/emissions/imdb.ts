@@ -1,5 +1,5 @@
 import { emit } from '../emitter/emit';
-import { Topic } from './Topic';
+import { Topic } from '../topic/Topic';
 import type { DereferrerOptions } from '../../../../core/api';
 import type { IMDBReference } from '../../../../core/types/IMDBReference';
 import { LocalStore } from '../../store';

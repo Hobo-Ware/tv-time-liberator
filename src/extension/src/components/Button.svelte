@@ -1,8 +1,8 @@
 <script>
-    export let isDisabled = false;
+    export let disabled = false;
 </script>
 
-<button disabled={isDisabled} on:click>
+<button disabled={disabled} on:click>
     <slot />
 </button>
 
@@ -12,8 +12,8 @@
         cursor: pointer;
         width: 150px;
         height: 40px;
-        line-height: 42px;
-        font-size: 20px;
+        line-height: 2em;
+        font-size: 1.2em;
         font-family: "Bebas Neue", sans-serif;
         background: linear-gradient(45deg, transparent 5%, #ff013c 5%);
         border: 0;
