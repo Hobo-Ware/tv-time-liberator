@@ -57,6 +57,9 @@
     class="progress-container"
     style:opacity={!$isLiberationInProgress$ ? 0 : 1}
   >
+    <span class="progress-report-message">
+      Estimated time: {$progress$?.estimated}s
+    </span>
     <span class="progress-report-message">{$progress$?.message}</span>
     <ProgressBar progress={$progress$?.value?.current * 100} />
   </div>
@@ -73,7 +76,7 @@
   }
 
   .progress-container {
-    height: 2em;
+    height: 4em;
     width: 100%;
     display: flex;
     flex-direction: column;
