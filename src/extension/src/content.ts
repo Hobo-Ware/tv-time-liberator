@@ -3,9 +3,11 @@ import { setAuthorizationHeader } from '../../core/http/setAuthorizationHeader';
 import { download } from './utils/download';
 import { listener } from './request/listener/listener';
 import { Topic } from './request/topic/Topic';
-import { imdb as imdbResolver } from './request/topic/imdb';
+import { imdb as imdbResolver } from './request/emissions/imdb';
 import { setCache } from '../../core/http';
 import { LocalStore } from './store';
+import { emit } from './request/emitter/emit';
+import type { ProgressReport } from '../../core/utils/ProgressReporter';
 
 console.log('--- TV Time Liberator Loaded ---');
 
@@ -17,6 +19,17 @@ function readToken(): string {
     return localStorage.getItem('flutter.jwtToken')!.slice(1, -1);
 }
 
+let reportSnapshot: ProgressReport = {
+    total: NaN,
+    estimated: NaN,
+    value: {
+        current: NaN,
+        previous: NaN,
+    },
+    message: '',
+};
+emit(Topic.Progress, reportSnapshot);
+
 async function extract() {
     const user: { login: string } = readUser();
     setAuthorizationHeader(readToken());
@@ -27,9 +40,14 @@ async function extract() {
     const config = {
         userId: user.login,
         imdbResolver,
+        onProgress: (report: ProgressReport) => {
+            reportSnapshot = report;
+            emit(Topic.Progress, report);
+        },
     };
 
     const movies = await followedMovies(config);
+
     download('movies.json', JSON.stringify(movies, null, 2));
 
     const shows = await followedShows(config);
@@ -54,4 +72,8 @@ listener(Topic.Export, async () => {
 
 listener(Topic.CheckAuthorization, () => {
     return isAuthorized();
+});
+
+listener(Topic.CurrentProgress, () => {
+    return reportSnapshot;
 });
