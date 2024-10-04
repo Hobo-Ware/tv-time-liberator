@@ -24,12 +24,14 @@ export async function favoriteList({
     const movieUrl = Resource.Get.Favorites.Movies(userId);
     const movies = await request<FavoriteResponse>(movieUrl)
         .then(response => response.data.objects);
-    const favoriteMovie = movies ?? [];
+    const favoriteMovie = (movies ?? [])
+        .filter(movie => movie.uuid != null);
 
     const showUrl = Resource.Get.Favorites.Shows(userId);
     const show = await request<FavoriteResponse>(showUrl)
         .then(response => response.data.objects);
-    const favoriteShow = show ?? [];
+    const favoriteShow = (show ?? [])
+        .filter(show => show.uuid != null);
 
     const progress = new ProgressReporter(
         favoriteMovie.length + favoriteShow.length,
