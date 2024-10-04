@@ -30,6 +30,7 @@ export async function myLists({
                 is_public: list.is_public,
                 items: list
                     .objects
+                    .filter(item => item.uuid != null)
                     .map(item => ({
                         uuid: item.uuid,
                         title: item.name,
@@ -37,7 +38,6 @@ export async function myLists({
                         type: item.type,
                     }))
             })));
-
 
     const progress = new ProgressReporter(
         result.reduce((acc, list) => acc + list.items.length, 0),
