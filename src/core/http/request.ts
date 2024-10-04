@@ -16,6 +16,12 @@ async function sha256(source: string): Promise<string> {
     return resultBytes.map(x => x.toString(16).padStart(2, '0')).join('');
 }
 
+const isErrorResponse = (response: any) => {
+    return response instanceof Object
+        && 'status' in response &&
+        ['error', 'fail'].includes(response.status);
+}
+
 export async function request<T>(url: string, options: RequestOptions = { responseType: 'json' }): Promise<T> {
     const key = await sha256(url);
 
@@ -27,7 +33,7 @@ export async function request<T>(url: string, options: RequestOptions = { respon
 
         const cached = await cache.instance?.get<T>(key);
 
-        if (cached != null) {
+        if (cached != null && !isErrorResponse(cached)) {
             return cached;
         }
 
@@ -42,7 +48,7 @@ export async function request<T>(url: string, options: RequestOptions = { respon
                     ? res.json()
                     : res.text()
             ).then(response => {
-                if (response instanceof Object && 'status' in response && response.status === 'error') {
+                if (isErrorResponse(response)) {
                     return Promise.reject(response?.message);
                 }
 
