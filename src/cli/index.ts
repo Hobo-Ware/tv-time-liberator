@@ -32,9 +32,19 @@ setCache(PersistentStore);
 const exportDir = '.export';
 await mkdir(exportDir, { recursive: true });
 
-const config = {
-    userId,
-    onProgress: ({ value: { current }, message, estimated }) => reporter.update(current, { message, estimated }),
+const configFactory = (category = '') => {
+    reporter.start(1, 0, { category, ...reporterDefaultPayload });
+
+    return {
+        userId,
+        onProgress: ({ value: { current }, message, estimated }) => {
+            reporter.update(current, { message, estimated });
+
+            if (current === 1) {
+                reporter.stop();
+            }
+        },
+    };
 };
 
 const reporterDefaultPayload = {
@@ -42,22 +52,14 @@ const reporterDefaultPayload = {
     message: '',
 }
 
-reporter.start(1, 0, { category: 'Movies', ...reporterDefaultPayload });
-const movies = await followedMovies(config);
-reporter.stop();
+const movies = await followedMovies(configFactory('Movies'));
 await writeFile('.export/movies.json', JSON.stringify(movies, null, 4))
 
-reporter.start(1, 0, { category: 'Shows', ...reporterDefaultPayload });
-const shows = await followedShows(config);
-reporter.stop();
+const shows = await followedShows(configFactory('Series'));
 await writeFile('.export/shows.json', JSON.stringify(shows, null, 4));
 
-reporter.start(1, 0, { category: 'Faves', ...reporterDefaultPayload });
-const favorites = await favoriteList(config);
-reporter.stop();
+const favorites = await favoriteList(configFactory('Faves'));
 await writeFile('.export/favorites.json', JSON.stringify(favorites, null, 2));
 
-reporter.start(1, 0, { category: 'Lists', ...reporterDefaultPayload });
-const lists = await myLists(config);
-reporter.stop();
+const lists = await myLists(configFactory('Lists'));
 await writeFile('.export/lists.json', JSON.stringify(lists, null, 2));
