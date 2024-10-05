@@ -1,4 +1,5 @@
 import './db.mock';
+import './env.mock';
 
 import { beforeAll, expect } from 'bun:test';
 import { login } from '../src/cli/login';
@@ -7,6 +8,8 @@ import { PersistentStore } from '../src/cli/store';
 import { setCache } from '../src/core/http';
 
 beforeAll(async () => {
+    process.env.TV_TIME_USERNAME = 'test';
+    
     console.log('--- Authorizing test user before all tests ---');
 
     const username = assertDefined(process.env.TV_TIME_TEST_USERNAME, 'TV_TIME_TEST_USERNAME not defined.');
@@ -21,7 +24,7 @@ beforeAll(async () => {
      * The db.mock.ts file is used to mock the file-system-db library
      * The PersistentStore will now use the in-memory store instead of the file-system-db
      */
-    setCache(PersistentStore);
+    setCache(await PersistentStore.create(''));
 
     console.log('--- Initiating testing ---');
 });
