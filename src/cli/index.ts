@@ -76,3 +76,4 @@ for (const list of lists) {
         shows: list.shows,
     }));
 }
+process.exit(0);
