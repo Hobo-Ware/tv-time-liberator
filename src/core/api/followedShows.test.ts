@@ -5,7 +5,7 @@ import { setAuthorizationHeader } from '../http/setAuthorizationHeader';
 import { followedShows } from './followedShows';
 import { chernobyl_up_to_date, house_usher_continuing, station_eleven_stopped } from '../../.test/data';
 
-describe.only('followedShows', () => {
+describe('followedShows', () => {
     it('should fetch followed movies', async () => {
         const username = assertDefined(process.env.TV_TIME_TEST_USERNAME, 'TV_TIME_TEST_USERNAME not defined.');
         const password = assertDefined(process.env.TV_TIME_TEST_PASSWORD, 'TV_TIME_TEST_PASSWORD not defined.');
