@@ -1,6 +1,7 @@
 import { retryAsync } from 'ts-retry';
 import { authorizationHeader } from './internal/authorizationHeader';
 import { cache } from './internal/cache';
+import { sha256 } from '../utils/sha256';
 
 type RequestOptions = {
     headers?: Record<string, string>;
@@ -8,13 +9,6 @@ type RequestOptions = {
 };
 
 const cacheWarning = { isWarned: false };
-
-async function sha256(source: string): Promise<string> {
-    const sourceBytes = new TextEncoder().encode(source);
-    const digest = await crypto.subtle.digest("SHA-256", sourceBytes);
-    const resultBytes = [...new Uint8Array(digest)];
-    return resultBytes.map(x => x.toString(16).padStart(2, '0')).join('');
-}
 
 const isErrorResponse = (response: any) => {
     return response instanceof Object
