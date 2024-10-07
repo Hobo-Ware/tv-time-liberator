@@ -19,6 +19,8 @@ Frustrated with your data being held hostage by TV Time? This script will libera
     ```
 1. Run `bun cli` or `npm run cli` to start the CLI
 
+<img src="cli.webp"/>
+
 ### Extension
 
 1. Download the extension from the latest build [here](https://github.com/Hobo-Ware/tv-time-liberator/actions/workflows/build.yml)
