@@ -7,8 +7,8 @@ import { alien_unwatched, chernobyl_up_to_date, mr_nobody_watched, the_triangle_
 
 describe('myLists', () => {
     it('should return my lists', async () => {
-        const username = assertDefined(process.env.TV_TIME_TEST_USERNAME, 'TV_TIME_TEST_USERNAME not defined.');
-        const password = assertDefined(process.env.TV_TIME_TEST_PASSWORD, 'TV_TIME_TEST_PASSWORD not defined.');
+        const username = assertDefined(import.meta.env.TV_TIME_TEST_USERNAME, 'TV_TIME_TEST_USERNAME not defined.');
+        const password = assertDefined(import.meta.env.TV_TIME_TEST_PASSWORD, 'TV_TIME_TEST_PASSWORD not defined.');
 
         const { token, userId } = await login(username, password);
 
