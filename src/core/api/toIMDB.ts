@@ -2,6 +2,8 @@ import type { HTMLElement } from 'node-html-parser';
 import { assertDefined } from '../utils/assertDefined';
 import type { IMDBReference, IMDBUndefined } from '../types/IMDBReference';
 import { request } from '../http';
+import { LIBERATE_IMDB_MOVIE } from '../../cli/env/LIBERATE_IMDB_MOVIE';
+import { LIBERATE_IMDB_SHOW } from '../../cli/env/LIBERATE_IMDB_SHOW';
 
 async function parseHtml(html: string): Promise<HTMLElement> {
     if (globalThis.DOMParser) {
@@ -44,6 +46,14 @@ async function dereferrer(options: DereferrerOptions): Promise<string> {
 }
 
 export async function toIMDB(options: DereferrerOptions): Promise<IMDBReference> {
+    if (!LIBERATE_IMDB_MOVIE && options.type === 'movie') {
+        return '-1' as IMDBUndefined;
+    }
+
+    if (!LIBERATE_IMDB_SHOW && options.type === 'show') {
+        return '-1' as IMDBUndefined;
+    }
+
     return request<string>(await dereferrer(options), {
         headers: {
             Authorization: '',
@@ -60,3 +70,5 @@ export async function toIMDB(options: DereferrerOptions): Promise<IMDBReference>
         })
         .catch(() => '-1' as IMDBUndefined);
 }
+
+
