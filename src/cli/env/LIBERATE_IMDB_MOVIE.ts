@@ -1,4 +1,4 @@
-const value = process.env.LIBERATE_IMDB_MOVIE;
+const value = import.meta.env.LIBERATE_IMDB_MOVIE;
 
 if (value == null) {
     console.warn('LIBERATE_IMDB_MOVIE not set (default=true), IMDB ids will be resolved.');
