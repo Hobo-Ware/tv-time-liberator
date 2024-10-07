@@ -9,7 +9,9 @@ import { setCache } from '../src/core/http';
 
 beforeAll(async () => {
     process.env.TV_TIME_USERNAME = 'test';
-    
+    process.env.LIBERATE_IMDB_SHOW = 'true';
+    process.env.LIBERATE_IMDB_MOVIE = 'true';
+
     console.log('--- Authorizing test user before all tests ---');
 
     const username = assertDefined(process.env.TV_TIME_TEST_USERNAME, 'TV_TIME_TEST_USERNAME not defined.');
