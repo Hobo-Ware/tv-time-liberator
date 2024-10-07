@@ -17,7 +17,7 @@ export async function getShowSeasons({
 }: SeriesInfoOptions): Promise<Season[]> {
     const url = Resource.Get.Shows.Info(id);
 
-    const { seasons } = await request<ShowInfoResponse>(url);
+    const { seasons = [] } = await request<ShowInfoResponse>(url);
 
     const progress = new ProgressReporter(
         seasons.reduce((acc, season) => acc + season.episodes.length, 0),
