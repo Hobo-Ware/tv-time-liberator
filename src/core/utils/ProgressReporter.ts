@@ -15,7 +15,7 @@ export type ProgressCallback = (report: ProgressReport) => void;
 export class ProgressReporter {
     private _progress = 0;
     private _previous = 0;
-    private _eta = create({ min: 0, max: 1 });
+    private _eta = create({ min: 0, max: 1, historyTimeConstant: 5 });
 
     constructor(
         private _total: number,
