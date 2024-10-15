@@ -36,7 +36,7 @@ export async function toIMDB(options: DereferrerOptions): Promise<IMDBReference>
         return '-1' as IMDBUndefined;
     }
 
-    if (!LIBERATE_IMDB_SHOW && options.type === 'show') {
+    if (!LIBERATE_IMDB_SHOW && ['show', 'episode'].includes(options.type)) {
         return '-1' as IMDBUndefined;
     }
 

@@ -8,10 +8,6 @@ import { PersistentStore } from '../src/cli/store';
 import { setCache } from '../src/core/http';
 
 beforeAll(async () => {
-    import.meta.env.TV_TIME_USERNAME = 'test';
-    import.meta.env.LIBERATE_IMDB_SHOW = 'true';
-    import.meta.env.LIBERATE_IMDB_MOVIE = 'true';
-
     console.log('--- Authorizing test user before all tests ---');
 
     const username = assertDefined(import.meta.env.TV_TIME_TEST_USERNAME, 'TV_TIME_TEST_USERNAME not defined.');
