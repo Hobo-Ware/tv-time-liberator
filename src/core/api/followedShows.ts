@@ -68,11 +68,11 @@ export async function followedShows({
 
         const info = await getShowSeasons({
             id: show.id.tvdb,
-            onProgress: ({ message, total }) => {
-                progress.increment(SEASONS_INCREMENT / total);
+            onProgress: ({ message, value: { previous, current, } }) => {
+                progress.increment(SEASONS_INCREMENT * (current - previous));
                 progress.report(`${show.title} - ${message}`);
             },
-            imdbResolver
+            imdbResolver,
         });
 
         liberatedShows.push({
