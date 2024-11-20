@@ -3,8 +3,8 @@ import { Show } from "../types/Show";
 import { stringify } from "@std/csv";
 
 const header = [
-    "id_imdb",
-    "id_tvdb",
+    "imdb_id",
+    "tvdb_id",
     "type",
     "title",
     "season",
@@ -13,6 +13,7 @@ const header = [
     "is_watched",
     "watched_at",
     "status",
+    "is_watchlisted",
 ];
 
 type CsvParams = {
@@ -40,6 +41,7 @@ export function toCsv({
             is_watched,
             watched_at,
             "",
+            watched_at == null,
         ]);
 
     const showCsvEntries = shows
@@ -70,6 +72,7 @@ export function toCsv({
                         is_watched,
                         watched_at,
                         status,
+                        watched_at == null,
                     ])
             )
         );
