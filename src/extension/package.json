@@ -1,5 +1,6 @@
 {
   "name": "tv-time-liberator-extension",
+  "description": "Easily export your watch history, favorites, and lists from TV Time. Perfect for backup, migration, or analysis.",
   "private": true,
   "version": "1.0.0",
   "type": "module",

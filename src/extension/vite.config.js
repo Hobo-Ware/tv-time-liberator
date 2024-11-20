@@ -5,9 +5,16 @@ import webExtension, { readJsonFile } from 'vite-plugin-web-extension';
 const manifest = readJsonFile('src/manifest.json');
 const pkg = readJsonFile('package.json');
 
+function humanize(str) {
+  return str.split('-')
+    .map((s) => s.charAt(0)
+      .toUpperCase() + s.slice(1))
+    .join(' ');
+}
+
 function generateManifest() {
   return {
-    name: pkg.name,
+    name: humanize(pkg.name),
     description: pkg.description,
     version: pkg.version,
     ...manifest,
