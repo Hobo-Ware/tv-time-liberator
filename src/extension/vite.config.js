@@ -14,10 +14,10 @@ function humanize(str) {
 
 function generateManifest() {
   return {
+    ...manifest,
     name: humanize(pkg.name),
     description: pkg.description,
     version: pkg.version,
-    ...manifest,
   };
 }
 
