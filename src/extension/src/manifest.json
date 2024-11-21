@@ -23,7 +23,6 @@
     }
   ],
   "permissions": [
-    "storage",
     "tabs"
   ],
   "{{chrome}}.action": {
