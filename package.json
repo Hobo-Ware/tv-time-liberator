@@ -1,6 +1,6 @@
 {
   "name": "tv-time-liberator",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "author": "",
   "type": "module",
   "main": "src/cli/index.ts",
