@@ -17,7 +17,7 @@ import type { ProgressReport } from "../../core/utils/ProgressReporter";
 
 console.log("--- TV Time Liberator Loaded ---");
 
-function readUser(): { login: string; name: string } {
+function readUser(): { id: string; login: string; name: string } {
     return JSON.parse(JSON.parse(localStorage.getItem("flutter.user")!));
 }
 
@@ -37,14 +37,14 @@ let reportSnapshot: ProgressReport = {
 emit(Topic.Progress, reportSnapshot);
 
 async function extract() {
-    const user: { login: string } = readUser();
+    const user: { login: string, id: string } = readUser();
     setAuthorizationHeader(readToken());
     setCache(LocalStore);
 
     console.log("Extracting...");
 
     const config = {
-        userId: user.login,
+        userId: user.id ?? user.login,
         imdbResolver,
         onProgress: (report: ProgressReport) => {
             reportSnapshot = report;
