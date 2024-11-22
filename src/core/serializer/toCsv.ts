@@ -44,7 +44,7 @@ export function toCsv({
             watched_at == null,
         ]);
 
-    const showCsvEntries = shows
+    const episodesCsvEntries = shows
         .flatMap(({
             title,
             seasons,
@@ -55,6 +55,7 @@ export function toCsv({
                 episodes,
             }) =>
                 episodes
+                    .filter(episode => episode.is_watched)
                     .map(({
                         id,
                         special,
@@ -64,7 +65,7 @@ export function toCsv({
                     }) => [
                         id?.imdb,
                         id?.tvdb,
-                        "show",
+                        "episode",
                         title,
                         season,
                         episode,
@@ -77,9 +78,36 @@ export function toCsv({
             )
         );
 
+    const showCsvEntries = shows
+        .flatMap(({
+            id: showId,
+            title,
+            seasons,
+            status,
+        }) => {
+            const hasUnwatchedEpisode = seasons?.some(
+                ({ episodes }) => episodes.some(episode => !episode.is_watched)
+            );
+
+            return [[
+                showId?.imdb,
+                showId?.tvdb,
+                "show",
+                title,
+                "",
+                "",
+                "",
+                "",
+                "",
+                status,
+                hasUnwatchedEpisode,
+            ]]
+        });
+
     return stringify([
         header,
         ...movieCsvEntries,
+        ...episodesCsvEntries,
         ...showCsvEntries,
     ]);
 }
