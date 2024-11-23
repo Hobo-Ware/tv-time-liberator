@@ -29,9 +29,11 @@ describe("toCsv", () => {
     });
 
     it.only("should serialize shows", () => {
+        const shows = [chernobyl_up_to_date, house_usher_continuing];
+
         const result = toCsv({
             movies: [],
-            shows: [chernobyl_up_to_date, house_usher_continuing] as any,
+            shows: shows as any,
         });
 
         expect(result).toBeString();
@@ -53,9 +55,12 @@ describe("toCsv", () => {
                                 watched_at,
                             },
                         ) => {
+                            if (!is_watched) {
+                                return;
+                            }
                             const row = rest.shift();
                             expect(row).toBe(
-                                `${id?.imdb},${id?.tvdb},show,${chernobyl_up_to_date.title},${season},${episode},${special},${is_watched},${watched_at},${chernobyl_up_to_date.status},false\r`,
+                                `${id?.imdb},${id?.tvdb},episode,${chernobyl_up_to_date.title},${season},${episode},${special},${is_watched},${watched_at},${chernobyl_up_to_date.status},false\r`,
                             );
                         },
                     );
@@ -74,14 +79,33 @@ describe("toCsv", () => {
                                 watched_at,
                             },
                         ) => {
+                            if (!is_watched) {
+                                return;
+                            }
                             const row = rest.shift();
                             expect(row).toBe(
-                                `${id?.imdb},${id?.tvdb},show,${house_usher_continuing.title},${season},${episode},${special},${is_watched},${
+                                `${id?.imdb},${id?.tvdb},episode,${house_usher_continuing.title},${season},${episode},${special},${is_watched},${
                                     watched_at ?? ""
                                 },${house_usher_continuing.status},${watched_at == null}\r`,
                             );
                         },
                     );
             });
+
+        shows.forEach(({
+            id,
+            title,
+            status,
+            seasons,
+        }) => {
+            const hasUnwatchedEpisode = seasons?.some(
+                ({ episodes }) => episodes.some(episode => !episode.is_watched)
+            );
+
+            const row = rest.shift();
+            expect(row).toBe(
+                `${id?.imdb},${id?.tvdb},show,${title},,,,,,${status},${hasUnwatchedEpisode}\r`,
+            );
+        })
     });
 });
