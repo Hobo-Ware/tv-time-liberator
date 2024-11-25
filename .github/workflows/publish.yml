@@ -1,0 +1,49 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "latest"
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Update package.json with tag version
+        working-directory: src/extension
+        run: |
+          TAG=$(echo $GITHUB_REF | sed 's/refs\/tags\///')
+          if [[ ! $TAG =~ ^(?:\d{1,5}\.){0,3}\d{1,5}$ ]]; then
+            echo "Tag $TAG does not match the required pattern"
+            exit 1
+          fi
+          TAG=$(echo $TAG | sed 's/^v//')
+          echo "Updating package.json with version $TAG"
+          jq --arg tag "$TAG" '.version = $tag' package.json > tmp.$$.json && mv tmp.$$.json package.json
+
+      - name: Build extension
+        run: bun extension:build
+
+      - name: Archive extension
+        run: zip -r tv-time-liberator.zip src/extension/dist
+
+      - name: Upload to Chrome Web Store
+        uses: mobilefirstllc/cws-publish@latest
+        with:
+          action: "upload"
+          client_id: ${{ secrets.GOOGLE_CLIENT }}
+          client_secret: ${{ secrets.GOOGLE_SECRET }}
+          refresh_token: ${{ secrets.GOOGLE_REFRESH_TOKEN}}
+          extension_id: ${{ secrets.CWS_EXTENSION_ID }}
+          zip_file: "tv-time-liberator.zip"
