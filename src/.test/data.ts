@@ -214,7 +214,7 @@ export const house_usher_continuing = {
         "imdb": "tt15567174"
     },
     "created_at": "2024-09-13T10:49:37.535425Z",
-    "title": "The Fall Of The House Of Usher",
+    "title": "The Fall of the House of Usher",
     "status": "continuing",
     "seasons": [
         {

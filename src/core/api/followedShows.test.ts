@@ -6,7 +6,7 @@ import { followedShows } from './followedShows';
 import { chernobyl_up_to_date, house_usher_continuing, station_eleven_stopped } from '../../.test/data';
 
 describe('followedShows', () => {
-    it('should fetch followed movies', async () => {
+    it('should fetch followed shows', async () => {
         const username = assertDefined(import.meta.env.TV_TIME_TEST_USERNAME, 'TV_TIME_TEST_USERNAME not defined.');
         const password = assertDefined(import.meta.env.TV_TIME_TEST_PASSWORD, 'TV_TIME_TEST_PASSWORD not defined.');
 
