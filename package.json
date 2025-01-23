@@ -9,7 +9,7 @@
     "cli-progress": "^3.12.0",
     "file-system-db": "^2.1.0",
     "jwt-decode": "^4.0.0",
-    "puppeteer": "^23.3.0",
+    "puppeteer": "^24.1.1",
     "rxjs": "^7.8.1",
     "simple-eta": "^3.0.2",
     "ts-retry": "^5.0.1",
@@ -24,16 +24,16 @@
     "tester": "bun test src --timeout 30000 --bail"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tsconfig/svelte": "^5.0.4",
-    "@types/bun": "^1.1.9",
+    "@types/bun": "^1.2.0",
     "@types/cli-progress": "^3.11.6",
     "@types/webextension-polyfill": "^0.12.1",
-    "svelte": "^4.2.19",
-    "svelte-check": "^4.0.2",
-    "tslib": "^2.7.0",
-    "typescript": "^5.6.2",
-    "vite": "^5.4.5",
-    "vite-plugin-web-extension": "^4.1.6"
+    "svelte": "^5.19.2",
+    "svelte-check": "^4.1.4",
+    "tslib": "^2.8.1",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.11",
+    "vite-plugin-web-extension": "^4.4.3"
   }
 }
