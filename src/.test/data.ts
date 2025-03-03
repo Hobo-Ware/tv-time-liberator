@@ -190,7 +190,7 @@ export const chernobyl_up_to_date = {
                     "number": 4,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:49"
+                    "watched_at": undefined
                 },
                 {
                     "id": {
