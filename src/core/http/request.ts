@@ -34,6 +34,7 @@ export async function request<T>(url: string, options: RequestOptions = { respon
         const reponse = await retryAsync(
             () => fetch(url, {
                 headers: {
+                    'page-limit': '500',
                     ...authorizationHeader,
                     ...(options.headers || {}),
                 },
