@@ -18,13 +18,13 @@ describe("toCsv", () => {
         const [header, nobody, matrix] = result.split("\n");
 
         expect(header).toBe(
-            "imdb_id,tvdb_id,type,title,season,episode,is_special,is_watched,watched_at,rewatch_count,status,is_watchlisted\r",
+            "imdb_id,tvdb_id,type,title,season,episode,is_special,is_watched,watched_at,watch_count,status,is_watchlisted\r",
         );
         expect(nobody).toBe(
-            `${mr_nobody_watched.id?.imdb},${mr_nobody_watched.id?.tvdb},movie,${mr_nobody_watched.title},,,false,${mr_nobody_watched.is_watched},${mr_nobody_watched.watched_at},${mr_nobody_watched.rewatch_count},,false\r`,
+            `${mr_nobody_watched.id?.imdb},${mr_nobody_watched.id?.tvdb},movie,${mr_nobody_watched.title},,,false,${mr_nobody_watched.is_watched},${mr_nobody_watched.watched_at},${mr_nobody_watched.rewatch_count + 1},,false\r`,
         );
         expect(matrix).toBe(
-            `${the_matrix_not_watched.id?.imdb},${the_matrix_not_watched.id?.tvdb},movie,${the_matrix_not_watched.title},,,false,${the_matrix_not_watched.is_watched},,,,true\r`,
+            `${the_matrix_not_watched.id?.imdb},${the_matrix_not_watched.id?.tvdb},movie,${the_matrix_not_watched.title},,,false,${the_matrix_not_watched.is_watched},,0,,true\r`,
         );
     });
 
@@ -39,7 +39,7 @@ describe("toCsv", () => {
         expect(result).toBeString();
         const [header, ...rest] = result.split("\n");
         expect(header).toBe(
-            "imdb_id,tvdb_id,type,title,season,episode,is_special,is_watched,watched_at,rewatch_count,status,is_watchlisted\r",
+            "imdb_id,tvdb_id,type,title,season,episode,is_special,is_watched,watched_at,watch_count,status,is_watchlisted\r",
         );
 
         chernobyl_up_to_date.seasons
@@ -53,6 +53,7 @@ describe("toCsv", () => {
                                 number: episode,
                                 is_watched,
                                 watched_at,
+                                watch_count,
                             },
                         ) => {
                             if (!is_watched) {
@@ -60,7 +61,7 @@ describe("toCsv", () => {
                             }
                             const row = rest.shift();
                             expect(row).toBe(
-                                `${id?.imdb},${id?.tvdb},episode,${chernobyl_up_to_date.title},${season},${episode},${special},${is_watched},${watched_at},,${chernobyl_up_to_date.status},false\r`,
+                                `${id?.imdb},${id?.tvdb},episode,${chernobyl_up_to_date.title},${season},${episode},${special},${is_watched},${watched_at},${watch_count},${chernobyl_up_to_date.status},false\r`,
                             );
                         },
                     );
@@ -77,6 +78,7 @@ describe("toCsv", () => {
                                 number: episode,
                                 is_watched,
                                 watched_at,
+                                watch_count,
                             },
                         ) => {
                             if (!is_watched) {
@@ -84,9 +86,8 @@ describe("toCsv", () => {
                             }
                             const row = rest.shift();
                             expect(row).toBe(
-                                `${id?.imdb},${id?.tvdb},episode,${house_usher_continuing.title},${season},${episode},${special},${is_watched},${
-                                    watched_at ?? ""
-                                },,${house_usher_continuing.status},${watched_at == null}\r`,
+                                `${id?.imdb},${id?.tvdb},episode,${house_usher_continuing.title},${season},${episode},${special},${is_watched},${watched_at ?? ""
+                                },${watch_count ?? ""},${house_usher_continuing.status},${watched_at == null}\r`,
                             );
                         },
                     );
