@@ -12,6 +12,7 @@ const header = [
     "is_special",
     "is_watched",
     "watched_at",
+    "rewatch_count",
     "status",
     "is_watchlisted",
 ];
@@ -30,6 +31,7 @@ export function toCsv({
             title,
             is_watched,
             watched_at,
+            rewatch_count,
         }) => [
             id?.imdb,
             id?.tvdb,
@@ -40,6 +42,7 @@ export function toCsv({
             false,
             is_watched,
             watched_at,
+            rewatch_count,
             "",
             watched_at == null,
         ]);
@@ -72,6 +75,7 @@ export function toCsv({
                         special,
                         is_watched,
                         watched_at,
+                        "",
                         status,
                         watched_at == null,
                     ])
@@ -94,6 +98,7 @@ export function toCsv({
                 showId?.tvdb,
                 "show",
                 title,
+                "",
                 "",
                 "",
                 "",
