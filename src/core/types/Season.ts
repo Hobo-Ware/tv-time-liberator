@@ -1,5 +1,5 @@
+import { EpisodeWatchInfo } from './EpisodeWatchInfo';
 import { MediaIdentifier } from './MediaIdentifier';
-import { WatchInfo } from './WatchInfo';
 
 export type Season = {
     number: number;
@@ -7,5 +7,5 @@ export type Season = {
         number: number;
         special: boolean;
         id: MediaIdentifier;
-    } & WatchInfo>;
+    } & EpisodeWatchInfo>;
 };
