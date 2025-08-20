@@ -6,6 +6,7 @@ export interface MovieEntry {
     created_at: string;
     updated_at: string;
     watched_at?: string;
+    rewatch_count?: number;
     meta: Meta;
     filter: string[];
 }
