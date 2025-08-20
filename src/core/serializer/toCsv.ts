@@ -1,6 +1,6 @@
+import { stringify } from "@std/csv";
 import { Movie } from "../types/Movie";
 import { Show } from "../types/Show";
-import { stringify } from "@std/csv";
 
 const header = [
     "imdb_id",
@@ -12,7 +12,7 @@ const header = [
     "is_special",
     "is_watched",
     "watched_at",
-    "rewatch_count",
+    "watch_count",
     "status",
     "is_watchlisted",
 ];
@@ -33,19 +33,19 @@ export function toCsv({
             watched_at,
             rewatch_count,
         }) => [
-            id?.imdb,
-            id?.tvdb,
-            "movie",
-            title,
-            "",
-            "",
-            false,
-            is_watched,
-            watched_at,
-            rewatch_count,
-            "",
-            watched_at == null,
-        ]);
+                id?.imdb,
+                id?.tvdb,
+                "movie",
+                title,
+                "",
+                "",
+                false,
+                is_watched,
+                watched_at,
+                watched_at == undefined ? 0 : (rewatch_count ?? 0) + 1,
+                "",
+                watched_at == null,
+            ]);
 
     const episodesCsvEntries = shows
         .flatMap(({
@@ -65,20 +65,21 @@ export function toCsv({
                         number: episode,
                         is_watched,
                         watched_at,
+                        watch_count,
                     }) => [
-                        id?.imdb,
-                        id?.tvdb,
-                        "episode",
-                        title,
-                        season,
-                        episode,
-                        special,
-                        is_watched,
-                        watched_at,
-                        "",
-                        status,
-                        watched_at == null,
-                    ])
+                            id?.imdb,
+                            id?.tvdb,
+                            "episode",
+                            title,
+                            season,
+                            episode,
+                            special,
+                            is_watched,
+                            watched_at,
+                            watch_count,
+                            status,
+                            watched_at == null,
+                        ])
             )
         );
 
