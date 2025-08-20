@@ -58,6 +58,7 @@ export async function followedMovies({
             title,
             watched_at: movie.watched_at,
             is_watched: movie.watched_at != null,
+            rewatch_count: movie.rewatch_count,
         });
     }
 
