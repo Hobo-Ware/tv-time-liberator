@@ -7,7 +7,8 @@ export const mr_nobody_watched = {
     "uuid": "409c29e8-8daf-41bd-843a-8a217320d374",
     "title": "Mr. Nobody",
     "watched_at": "2024-09-13T10:49:37Z",
-    "is_watched": true
+    "is_watched": true,
+    "rewatch_count": 2
 };
 
 export const the_matrix_not_watched = {
