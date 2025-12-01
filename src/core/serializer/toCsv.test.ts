@@ -1,11 +1,11 @@
 import { describe, expect, it } from "bun:test";
-import { toCsv } from "./toCsv";
 import {
     chernobyl_up_to_date,
     house_usher_continuing,
     mr_nobody_watched,
     the_matrix_not_watched,
 } from "../../.test/data";
+import { toCsv } from "./toCsv";
 
 describe("toCsv", () => {
     it("should serialize movies", () => {
@@ -28,7 +28,7 @@ describe("toCsv", () => {
         );
     });
 
-    it.only("should serialize shows", () => {
+    it("should serialize shows", () => {
         const shows = [chernobyl_up_to_date, house_usher_continuing];
 
         const result = toCsv({
