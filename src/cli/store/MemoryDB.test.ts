@@ -1,7 +1,7 @@
-import { describe, beforeEach, it, expect } from 'bun:test';
+import { beforeEach, describe, expect, it } from 'bun:test';
 import { MemoryDB } from './MemoryDB';
 
-describe.only('MemoryDB', () => {
+describe('MemoryDB', () => {
     let db: MemoryDB;
 
     beforeEach(() => {
