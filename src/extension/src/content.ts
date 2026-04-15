@@ -4,16 +4,16 @@ import {
     followedShows,
     myLists,
 } from "../../core/api";
-import { toCsv } from "../../core/serializer/toCsv";
+import { setCache } from "../../core/http";
 import { setAuthorizationHeader } from "../../core/http/setAuthorizationHeader";
-import { download } from "./utils/download";
+import { toCsv } from "../../core/serializer/toCsv";
+import type { ProgressReport } from "../../core/utils/ProgressReporter";
+import { imdb as imdbResolver } from "./request/emissions/imdb";
+import { emit } from "./request/emitter/emit";
 import { listener } from "./request/listener/listener";
 import { Topic } from "./request/topic/Topic";
-import { imdb as imdbResolver } from "./request/emissions/imdb";
-import { setCache } from "../../core/http";
 import { LocalStore } from "./store";
-import { emit } from "./request/emitter/emit";
-import type { ProgressReport } from "../../core/utils/ProgressReporter";
+import { download } from "./utils/download";
 
 console.log("--- TV Time Liberator Loaded ---");
 

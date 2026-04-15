@@ -1,13 +1,13 @@
 <script lang="ts">
-  import ProgressBar from "../components/ProgressBar.svelte";
-  import Button from "../components/Button.svelte";
-  import { Observable, switchMap, merge, defer, from, map, timer } from "rxjs";
-  import { extract } from "../request/emissions/extract";
-  import { verifyAuthorization } from "../request/topic/verifyAuthorization";
-  import { Topic } from "../request/topic/Topic";
-  import { listener } from "../request/listener/listener";
+  import { defer, from, map, merge, Observable, switchMap, timer } from "rxjs";
   import type { ProgressReport } from "../../../core/utils/ProgressReporter";
+  import Button from "../components/Button.svelte";
+  import ProgressBar from "../components/ProgressBar.svelte";
   import { currentProgress } from "../request/emissions/currentProgress";
+  import { extract } from "../request/emissions/extract";
+  import { listener } from "../request/listener/listener";
+  import { Topic } from "../request/topic/Topic";
+  import { verifyAuthorization } from "../request/topic/verifyAuthorization";
 
   const isAuthorized$ = timer(0, 1000).pipe(
     switchMap(() => verifyAuthorization()),
@@ -72,7 +72,7 @@
         target="_blank"
         rel="noreferrer"
       >
-        💡 Import <code>activity_history.csv</code> into Trakt →
+        💡 Try importing <code>activity_history.csv</code> into Trakt →
       </a>
     {:else}
       <span class="progress-report-message">
@@ -96,8 +96,7 @@
 
   .trakt-tip {
     font-family: "Courier New", Courier, monospace;
-    font-size: 0.75em;
-    color: #ed1c24;
+    color: #9f42c6;
     text-decoration: none;
     max-width: 90%;
     text-align: center;

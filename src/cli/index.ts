@@ -1,18 +1,18 @@
+import { Presets, SingleBar } from "cli-progress";
+import { mkdir, writeFile } from "fs/promises";
 import {
     favoriteList,
     followedMovies,
     followedShows,
     myLists,
 } from "../core/api";
-import { mkdir, writeFile } from "fs/promises";
-import { login } from "./login";
-import { setAuthorizationHeader } from "../core/http/setAuthorizationHeader";
 import { setCache } from "../core/http";
-import { PersistentStore } from "./store";
-import { Presets, SingleBar } from "cli-progress";
+import { setAuthorizationHeader } from "../core/http/setAuthorizationHeader";
 import { toCsv } from "../core/serializer/toCsv";
-import { TV_TIME_USERNAME, USERNAME_HASH } from "./env/TV_TIME_USERNAME";
 import { TV_TIME_PASSWORD } from "./env/TV_TIME_PASSWORD";
+import { TV_TIME_USERNAME, USERNAME_HASH } from "./env/TV_TIME_USERNAME";
+import { login } from "./login";
+import { PersistentStore } from "./store";
 
 const reporter = new SingleBar({
     format:
