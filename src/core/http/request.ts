@@ -1,12 +1,14 @@
 import { retryAsync } from 'ts-retry';
+import { sha256 } from '../utils/sha256';
 import { authorizationHeader } from './internal/authorizationHeader';
 import { cache } from './internal/cache';
-import { sha256 } from '../utils/sha256';
 
 type RequestOptions = {
     headers?: Record<string, string>;
     responseType?: 'json' | 'text';
 };
+
+const PAGE_LIMIT = 500;
 
 const cacheWarning = { isWarned: false };
 
@@ -34,7 +36,7 @@ export async function request<T>(url: string, options: RequestOptions = { respon
         const reponse = await retryAsync(
             () => fetch(url, {
                 headers: {
-                    'page-limit': '500',
+                    'page-limit': String(PAGE_LIMIT),
                     ...authorizationHeader,
                     ...(options.headers || {}),
                 },
@@ -67,4 +69,28 @@ export async function request<T>(url: string, options: RequestOptions = { respon
 
         throw error;
     }
+}
+
+/**
+ * Fetches all pages of a paginated TV Time API endpoint that returns
+ * `{ data: { objects: T[] } }`, stopping when a page returns fewer items
+ * than PAGE_LIMIT or an empty array.
+ *
+ * @param urlFactory - Function that accepts a 1-based page number and returns the URL.
+ */
+export async function paginatedRequest<T>(urlFactory: (page: number) => string): Promise<T[]> {
+    const all: T[] = [];
+    let page = 1;
+
+    while (true) {
+        const response = await request<{ data: { objects: T[] } }>(urlFactory(page));
+        const objects = response?.data?.objects ?? [];
+
+        all.push(...objects);
+
+        if (objects.length < PAGE_LIMIT) break;
+        page++;
+    }
+
+    return all;
 }

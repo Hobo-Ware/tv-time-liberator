@@ -1,6 +1,6 @@
+import { stringify } from "@std/csv";
 import { Movie } from "../types/Movie";
 import { Show } from "../types/Show";
-import { stringify } from "@std/csv";
 
 const header = [
     "imdb_id",

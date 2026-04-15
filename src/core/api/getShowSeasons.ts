@@ -8,12 +8,19 @@ type SeriesInfoOptions = {
     id: number;
     imdbResolver?: typeof toIMDB;
     onProgress?: ProgressCallback;
+    /**
+     * Pre-fetched map of episode TVDB ID → watched_at timestamp.
+     * When provided, the per-episode API call is skipped entirely,
+     * reducing N serial HTTP calls to a single map lookup.
+     */
+    watchedAtMap?: Map<number, string | null>;
 };
 
 export async function getShowSeasons({
     id,
     imdbResolver = toIMDB,
     onProgress = () => { },
+    watchedAtMap,
 }: SeriesInfoOptions): Promise<Season[]> {
     const url = Resource.Get.Shows.Info(id);
 
@@ -30,7 +37,10 @@ export async function getShowSeasons({
 
         for (let j = 0; j < season.episodes.length; j++) {
             const episode = season.episodes[j];
-            const { watched_date: watched_at } = await request<{ watched_date: string }>(Resource.Get.Episode.Info(episode.id))
+
+            const watched_at = watchedAtMap
+                ? (watchedAtMap.get(episode.id) ?? null)
+                : (await request<{ watched_date: string }>(Resource.Get.Episode.Info(episode.id))).watched_date;
 
             const extendedEpisode = {
                 id: {
@@ -48,12 +58,10 @@ export async function getShowSeasons({
             episodes.push(extendedEpisode);
         }
 
-        const extendedSeason = {
+        extended.push({
             number: season.number,
-            episodes: episodes,
-        };
-
-        extended.push(extendedSeason);
+            episodes,
+        });
     }
 
     progress.done('Show seasons exported.');

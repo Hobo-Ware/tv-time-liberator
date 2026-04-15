@@ -40,15 +40,25 @@ export const Resource = {
              * The URL to retrieve a list of followed shows.
              *
              * @param {string} userId - The ID of the user to retrieve the follows for.
+             * @param {number} page - The page number (1-based).
             */
-            Shows: (userId: string) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/tracking/cgw/follows/user/${userId}&entity_type=series&sort=watched_date,desc`,
+            Shows: (userId: string, page = 1) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/tracking/cgw/follows/user/${userId}&entity_type=series&sort=watched_date,desc&page=${page}&page_limit=500`,
+            /**
+             * The URL to retrieve a list of followed anime shows.
+             *
+             * @param {string} userId - The ID of the user to retrieve the follows for.
+             * @param {number} page - The page number (1-based).
+             */
+            Anime: (userId: string, page = 1) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/tracking/cgw/follows/user/${userId}&entity_type=anime&sort=watched_date,desc&page=${page}&page_limit=500`,
             /**
              * The URL to retrieve a list of followed movies.
              * 
              * @param {string} userId - The ID of the user to retrieve the follows for.
+             * @param {number} page - The page number (1-based).
              */
-            Movies: (userId: string) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/tracking/cgw/follows/user/${userId}&entity_type=movie&sort=watched_date,desc`,
+            Movies: (userId: string, page = 1) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/tracking/cgw/follows/user/${userId}&entity_type=movie&sort=watched_date,desc&page=${page}&page_limit=500`,
         },
+        EpisodeWatches: (userId: string, page = 1) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/tracking/watches/user/${userId}&entity_type=episode&page=${page}&page_limit=500`,
         Movie: {
             GetByUUID: (uuid: string) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/movies/${uuid}`,
         },

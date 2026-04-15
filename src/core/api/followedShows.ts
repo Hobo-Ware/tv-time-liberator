@@ -1,11 +1,11 @@
-
-import { request, Resource } from '../http';
-import type { ShowsListResponse } from './models/ShowsListResponse';
-import type { Show } from '../types/Show';
-import { assertDefined } from '../utils/assertDefined';
-import { getShowSeasons } from './getShowSeasons';
-import { toIMDB } from './toIMDB';
-import { ProgressCallback, ProgressReporter } from '../utils/ProgressReporter';
+import { paginatedRequest, Resource } from "../http";
+import type { Show } from "../types/Show";
+import { assertDefined } from "../utils/assertDefined";
+import { ProgressCallback, ProgressReporter } from "../utils/ProgressReporter";
+import { fetchAllEpisodeWatches } from "./episodeWatches";
+import { getShowSeasons } from "./getShowSeasons";
+import type { ShowsListResponse } from "./models/ShowsListResponse";
+import { toIMDB } from "./toIMDB";
 
 const SHOW_INCREMENT = .25;
 const SEASONS_INCREMENT = .75;
@@ -17,18 +17,25 @@ type FollowedShowsOptions = {
 };
 
 /**
- * Retrieves a list of followed shows.
+ * Retrieves a list of followed shows (series + anime).
  * @returns {Array} An array of shows objects.
  */
 export async function followedShows({
     userId,
     imdbResolver = toIMDB,
-    onProgress = () => { },
+    onProgress = () => {},
 }: FollowedShowsOptions): Promise<Show[]> {
-    const url = Resource.Get.Follows.Shows(userId);
+    const [seriesObjects, animeObjects, watchedAtMap] = await Promise.all([
+        paginatedRequest<ShowsListResponse["data"]["objects"][number]>(
+            (page) => Resource.Get.Follows.Shows(userId, page),
+        ),
+        paginatedRequest<ShowsListResponse["data"]["objects"][number]>(
+            (page) => Resource.Get.Follows.Anime(userId, page),
+        ),
+        fetchAllEpisodeWatches(userId),
+    ]);
 
-    const showsResponse = await request<ShowsListResponse>(url);
-    const objects = showsResponse.data.objects;
+    const objects = [...seriesObjects, ...animeObjects];
 
     const shows: Show[] = [];
 
@@ -47,13 +54,16 @@ export async function followedShows({
                 tvdb: object.meta.id,
                 imdb: await imdbResolver({
                     id: object.meta.id,
-                    type: 'show'
+                    type: "show",
                 }),
             },
             seasons: [],
             created_at: object.created_at,
             title,
-            status: assertDefined(object.filter.at(-1), 'Status not found.') as Show['status'],
+            status: assertDefined(
+                object.filter.at(-1),
+                "Status not found.",
+            ) as Show["status"],
         };
 
         progress.increment(SHOW_INCREMENT);
@@ -68,11 +78,12 @@ export async function followedShows({
 
         const info = await getShowSeasons({
             id: show.id.tvdb,
-            onProgress: ({ message, value: { previous, current, } }) => {
+            onProgress: ({ message, value: { previous, current } }) => {
                 progress.increment(SEASONS_INCREMENT * (current - previous));
                 progress.report(`${show.title} - ${message}`);
             },
             imdbResolver,
+            watchedAtMap,
         });
 
         liberatedShows.push({
@@ -81,7 +92,7 @@ export async function followedShows({
         });
     }
 
-    progress.done('Shows exported.');
+    progress.done("Shows exported.");
 
     return liberatedShows;
 }

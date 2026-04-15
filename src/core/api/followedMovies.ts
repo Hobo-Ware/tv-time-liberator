@@ -1,9 +1,9 @@
-import { request, Resource } from '../http';
-import type { MoviesResponse } from './models/MoviesResponse';
+import { paginatedRequest, Resource } from '../http';
 import type { Movie } from '../types/Movie';
 import { assertDefined } from '../utils/assertDefined';
-import { toIMDB } from './toIMDB';
 import { ProgressCallback, ProgressReporter } from '../utils/ProgressReporter';
+import type { MovieEntry } from './models/MovieEntry';
+import { toIMDB } from './toIMDB';
 
 type FollowedMoviesOptions = {
     userId: string;
@@ -20,9 +20,9 @@ export async function followedMovies({
     imdbResolver = toIMDB,
     onProgress = () => { },
 }: FollowedMoviesOptions): Promise<Movie[]> {
-    const url = Resource.Get.Follows.Movies(userId);
-    const movies = await request<MoviesResponse>(url)
-        .then(response => response.data.objects);
+    const movies = await paginatedRequest<MovieEntry>(
+        (page) => Resource.Get.Follows.Movies(userId, page),
+    );
 
     const progress = new ProgressReporter(
         movies.length,
