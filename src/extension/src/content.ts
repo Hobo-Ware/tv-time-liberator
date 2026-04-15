@@ -88,6 +88,16 @@ function isAuthorized(): boolean {
 
 listener(Topic.Export, async () => {
     await extract()
+        .then(() => {
+            reportSnapshot = {
+                ...reportSnapshot,
+                done: true,
+                value: { current: 1, previous: reportSnapshot.value?.current ?? 0 },
+                message: 'All done! Your data is free.',
+                estimated: 0,
+            };
+            emit(Topic.Progress, reportSnapshot);
+        })
         .catch(console.error);
 });
 

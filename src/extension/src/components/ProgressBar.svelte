@@ -1,9 +1,10 @@
 <script lang="ts">
 	interface Props {
 		progress?: number;
+		success?: boolean;
 	}
 
-	let { progress = 0 }: Props = $props();
+	let { progress = 0, success = false }: Props = $props();
 </script>
 
 <style>
@@ -18,10 +19,15 @@
 	.progress {
 		background-color: #ff013c;
 		height: 100%;
+		transition: background-color 0.6s ease, width 0.3s ease;
+	}
+
+	.progress.success {
+		background-color: #00c06f;
 	}
 </style>
 
 <div class="progress-bar">
-	<div class="progress" style="width: {progress}%"></div>
+	<div class="progress" class:success style="width: {progress}%"></div>
 </div>
 

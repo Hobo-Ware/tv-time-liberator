@@ -26,15 +26,21 @@
     progressListener$,
   );
 
+  const isDone$ = progress$.pipe(
+    map((report) => !!report?.done),
+  );
+
   const isLiberationInProgress$ = progress$.pipe(
-    map((report) => !!report.message && !isNaN(report.total)),
+    map((report) => !!report.message && !isNaN(report.total) && !report.done),
   );
 </script>
 
 <div>
   <h1>TV Time Liberator</h1>
 
-  {#if $isLiberationInProgress$}
+  {#if $isDone$}
+    <label for="button">Liberation complete! Your data is free. 🎉</label>
+  {:else if $isLiberationInProgress$}
     <label for="button">Liberation is in progress... </label>
   {:else if $isAuthorized$}
     <label for="button">Liberation is one click away 👇</label>
@@ -46,7 +52,9 @@
     disabled={!$isAuthorized$ || $isLiberationInProgress$}
     on:click={extract}
   >
-    {#if !$isLiberationInProgress$}
+    {#if $isDone$}
+      Liberate again
+    {:else if !$isLiberationInProgress$}
       Liberate
     {:else}
       {($progress$?.value?.current * 100).toFixed(2)}%...
@@ -55,13 +63,15 @@
 
   <div
     class="progress-container"
-    style:opacity={!$isLiberationInProgress$ ? 0 : 1}
+    style:opacity={!$isLiberationInProgress$ && !$isDone$ ? 0 : 1}
   >
-    <span class="progress-report-message">
-      Estimated time: {$progress$?.estimated}s
-    </span>
+    {#if !$isDone$}
+      <span class="progress-report-message">
+        Estimated time: {$progress$?.estimated}s
+      </span>
+    {/if}
     <span class="progress-report-message">{$progress$?.message}</span>
-    <ProgressBar progress={$progress$?.value?.current * 100} />
+    <ProgressBar progress={$progress$?.value?.current * 100} success={$isDone$} />
   </div>
 </div>
 

@@ -8,6 +8,7 @@ export type ProgressReport = {
     estimated: number;
     total: number;
     message: string;
+    done?: boolean;
 };
 
 export type ProgressCallback = (report: ProgressReport) => void;
