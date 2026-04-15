@@ -1,7 +1,7 @@
 import { paginatedRequest, Resource } from "../http";
 import type { Show } from "../types/Show";
 import { assertDefined } from "../utils/assertDefined";
-import { ProgressCallback, ProgressReporter } from "../utils/ProgressReporter";
+import { type ProgressCallback, ProgressReporter } from "../utils/ProgressReporter";
 import { fetchAllEpisodeWatches } from "./episodeWatches";
 import { getShowSeasons } from "./getShowSeasons";
 import type { ShowsListResponse } from "./models/ShowsListResponse";
