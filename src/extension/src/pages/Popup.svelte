@@ -65,7 +65,16 @@
     class="progress-container"
     style:opacity={!$isLiberationInProgress$ && !$isDone$ ? 0 : 1}
   >
-    {#if !$isDone$}
+    {#if $isDone$}
+      <a
+        class="trakt-tip"
+        href="https://app.trakt.tv/settings/data?mode=media"
+        target="_blank"
+        rel="noreferrer"
+      >
+        💡 Import <code>activity_history.csv</code> into Trakt →
+      </a>
+    {:else}
       <span class="progress-report-message">
         Estimated time: {$progress$?.estimated}s
       </span>
@@ -85,8 +94,26 @@
     white-space: nowrap;
   }
 
+  .trakt-tip {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.75em;
+    color: #ed1c24;
+    text-decoration: none;
+    max-width: 90%;
+    text-align: center;
+  }
+
+  .trakt-tip:hover {
+    text-decoration: underline;
+  }
+
+  .trakt-tip code {
+    font-family: inherit;
+    font-weight: bold;
+  }
+
   .progress-container {
-    height: 4em;
+    height: 5em;
     width: 100%;
     display: flex;
     flex-direction: column;

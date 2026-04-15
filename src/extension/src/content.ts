@@ -59,7 +59,7 @@ async function extract() {
     const shows = await followedShows(config);
     download("shows.json", JSON.stringify(shows, null, 2));
 
-    download("watchlist.csv", toCsv({ movies, shows }));
+    download("activity_history.csv", toCsv({ movies, shows }));
 
     const favorites = await favoriteList(config);
     download("favorites.json", JSON.stringify(favorites, null, 2));

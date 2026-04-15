@@ -67,7 +67,7 @@ await writeFile(userDirectory("movies.json"), JSON.stringify(movies, null, 4));
 const shows = await followedShows(configFactory("Series"));
 await writeFile(userDirectory("shows.json"), JSON.stringify(shows, null, 4));
 await writeFile(
-    userDirectory("watchlist.csv"),
+    userDirectory("activity_history.csv"),
     toCsv({
         movies,
         shows,
