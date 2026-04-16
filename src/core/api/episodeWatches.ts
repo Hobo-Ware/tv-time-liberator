@@ -26,6 +26,7 @@ export async function fetchAllEpisodeWatches(
             message: `Fetching watch history...`,
             subMessage: `${total.toLocaleString()} episodes · page ${page}`,
         }),
+        (entry) => entry.episode_id,
     );
 
     return new Map(entries.map(e => [e.episode_id, e.watched_at ?? null]));

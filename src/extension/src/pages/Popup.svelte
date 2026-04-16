@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { defer, from, map, merge, Observable, switchMap, timer } from "rxjs";
+  import { catchError, defer, from, map, merge, Observable, of, switchMap, timer } from "rxjs";
   import browser from "webextension-polyfill";
   import type { ProgressReport } from "../../../core/utils/ProgressReporter";
+  import type { AuthStatus } from "../request/topic/verifyAuthorization";
   import Button from "../components/Button.svelte";
   import ProgressBar from "../components/ProgressBar.svelte";
   import { currentProgress } from "../request/emissions/currentProgress";
@@ -10,12 +11,19 @@
   import { Topic } from "../request/topic/Topic";
   import { verifyAuthorization } from "../request/topic/verifyAuthorization";
 
+  type ExtendedAuthStatus = AuthStatus | 'unreachable';
+
   const authStatus$ = timer(0, 1000).pipe(
-    switchMap(() => verifyAuthorization()),
+    switchMap(() =>
+      from(verifyAuthorization()).pipe(
+        catchError(() => of('unreachable' as ExtendedAuthStatus)),
+      )
+    ),
   );
 
   const isAuthorized$ = authStatus$.pipe(map((s) => s === 'authorized'));
   const isWrongTab$   = authStatus$.pipe(map((s) => s === 'wrong-tab'));
+  const isUnreachable$ = authStatus$.pipe(map((s) => s === 'unreachable'));
 
   const progressListener$ = from(
     new Observable<ProgressReport>((observer) =>
@@ -26,7 +34,7 @@
   );
 
   const progress$ = merge(
-    defer(() => from(currentProgress())),
+    defer(() => from(currentProgress()).pipe(catchError(() => of(null)))),
     progressListener$,
   );
 
@@ -35,7 +43,7 @@
   );
 
   const isLiberationInProgress$ = progress$.pipe(
-    map((report) => !!report.message && !isNaN(report.total) && !report.done),
+    map((report) => !!report?.message && !isNaN(report?.total!) && !report?.done),
   );
 
   function openTvTime() {
@@ -65,6 +73,8 @@
       Liberation in progress...
     {:else if $isAuthorized$}
       Liberation is one click away 👇
+    {:else if $isUnreachable$}
+      Waiting for page...
     {:else if $isWrongTab$}
       Open TV Time first to get started
     {:else}
@@ -86,13 +96,13 @@
       {:else if !$isLiberationInProgress$}
         Liberate
       {:else}
-        {($progress$?.value?.current * 100).toFixed(2)}%
+        {(($progress$?.value?.current ?? 0) * 100).toFixed(2)}%
       {/if}
     </Button>
   {/if}
 
   <div class="progress-section" class:visible={$isLiberationInProgress$ || $isDone$}>
-    <ProgressBar progress={$progress$?.value?.current * 100} success={$isDone$} />
+    <ProgressBar progress={($progress$?.value?.current ?? 0) * 100} success={$isDone$} />
     <div class="progress-footer">
       {#if $isDone$}
         <a

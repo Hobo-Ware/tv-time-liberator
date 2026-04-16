@@ -74,26 +74,44 @@ export async function request<T>(url: string, options: RequestOptions = { respon
 /**
  * Fetches all pages of a paginated TV Time API endpoint that returns
  * `{ data: { objects: T[] } }`, stopping when a page returns fewer items
- * than PAGE_LIMIT or an empty array.
+ * than PAGE_LIMIT, an empty array, or (when getKey is provided) when a
+ * full page contains no new unique items (server-side loop detection).
  *
  * @param urlFactory - Function that accepts a 1-based page number and returns the URL.
  * @param onPage - Optional callback invoked after each page is fetched, with the current page number and running total.
+ * @param getKey - Optional function that returns a unique key for an item. When provided, duplicate items are skipped and pagination stops if a full page yields no new items.
  */
 export async function paginatedRequest<T>(
     urlFactory: (page: number) => string,
     onPage?: (page: number, total: number) => void,
+    getKey?: (item: T) => unknown,
 ): Promise<T[]> {
     const all: T[] = [];
+    const seen = getKey ? new Set<unknown>() : null;
     let page = 1;
 
     while (true) {
         const response = await request<{ data: { objects: T[] } }>(urlFactory(page));
         const objects = response?.data?.objects ?? [];
 
-        all.push(...objects);
-        onPage?.(page, all.length);
+        if (seen) {
+            const prevSize = seen.size;
+            for (const item of objects) {
+                const key = getKey!(item);
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    all.push(item);
+                }
+            }
+            onPage?.(page, all.length);
+            // Stop if partial page OR entire page was duplicates (API looping)
+            if (objects.length < PAGE_LIMIT || seen.size === prevSize) break;
+        } else {
+            all.push(...objects);
+            onPage?.(page, all.length);
+            if (objects.length < PAGE_LIMIT) break;
+        }
 
-        if (objects.length < PAGE_LIMIT) break;
         page++;
     }
 
