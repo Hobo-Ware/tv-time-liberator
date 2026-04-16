@@ -13,7 +13,7 @@ import { emit } from "./request/emitter/emit";
 import { listener } from "./request/listener/listener";
 import { Topic } from "./request/topic/Topic";
 import { LocalStore } from "./store";
-import { downloadZip } from "./utils/download";
+import { download, downloadZip } from "./utils/download";
 
 console.log("--- TV Time Liberator Loaded ---");
 
@@ -36,7 +36,7 @@ let reportSnapshot: ProgressReport = {
 };
 emit(Topic.Progress, reportSnapshot);
 
-async function extract() {
+async function extract(format: 'zip' | 'files' = 'zip') {
     const user: { login: string, id: string } = readUser();
     setAuthorizationHeader(readToken());
     setCache(LocalStore);
@@ -71,7 +71,13 @@ async function extract() {
         files[listFilename] = toCsv({ movies: list.movies, shows: list.shows });
     }
 
-    downloadZip(files);
+    if (format === 'zip') {
+        downloadZip(files);
+    } else {
+        for (const [filename, content] of Object.entries(files)) {
+            download(filename, content);
+        }
+    }
 }
 
 function isAuthorized(): boolean {
@@ -79,8 +85,8 @@ function isAuthorized(): boolean {
     return !!user.name && user.name !== "Anonymous";
 }
 
-listener(Topic.Export, async () => {
-    await extract()
+listener(Topic.Export, async ({ format }) => {
+    await extract(format)
         .then(() => {
             reportSnapshot = {
                 ...reportSnapshot,

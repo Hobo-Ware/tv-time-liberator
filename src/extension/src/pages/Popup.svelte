@@ -3,6 +3,7 @@
   import browser from "webextension-polyfill";
   import type { ProgressReport } from "../../../core/utils/ProgressReporter";
   import type { AuthStatus } from "../request/topic/verifyAuthorization";
+  import type { ExportFormat } from "../request/topic/TopicPayloadMap";
   import Button from "../components/Button.svelte";
   import ProgressBar from "../components/ProgressBar.svelte";
   import { currentProgress } from "../request/emissions/currentProgress";
@@ -10,6 +11,8 @@
   import { listener } from "../request/listener/listener";
   import { Topic } from "../request/topic/Topic";
   import { verifyAuthorization } from "../request/topic/verifyAuthorization";
+
+  let exportFormat: ExportFormat = $state('zip');
 
   type ExtendedAuthStatus = AuthStatus | 'unreachable';
 
@@ -89,7 +92,7 @@
   {:else}
     <Button
       disabled={!$isAuthorized$ || $isLiberationInProgress$}
-      onclick={extract}
+      onclick={() => extract(exportFormat)}
     >
       {#if $isDone$}
         Liberate again
@@ -101,27 +104,43 @@
     </Button>
   {/if}
 
+  {#if !$isLiberationInProgress$ && !$isDone$}
+    <div class="format-toggle">
+      <label class:active={exportFormat === 'zip'}>
+        <input type="radio" name="format" value="zip" bind:group={exportFormat} />
+        ZIP
+      </label>
+      <label class:active={exportFormat === 'files'}>
+        <input type="radio" name="format" value="files" bind:group={exportFormat} />
+        Files
+      </label>
+    </div>
+  {/if}
+
   <div class="progress-section" class:visible={$isLiberationInProgress$ || $isDone$}>
     <ProgressBar progress={($progress$?.value?.current ?? 0) * 100} success={$isDone$} />
     <div class="progress-footer">
       {#if $isDone$}
-        <a
-          class="trakt-link"
-          href="https://app.trakt.tv/settings/data?source=trakt-csv"
-          target="_blank"
-          rel="noreferrer"
-        >▶ Import <code>activity_history.csv</code> into Trakt</a>
+        <span class="eta done-label">✓ Done!</span>
       {:else}
         <span class="eta">ETA {$progress$?.estimated}s</span>
-        <span class="msg">
-          {$progress$?.message}
-          {#if $progress$?.subMessage}
-            <span class="sub-msg">{$progress$.subMessage}</span>
-          {/if}
-        </span>
       {/if}
+      <span class="msg">
+        {$progress$?.message}
+        {#if $progress$?.subMessage}
+          <span class="sub-msg">{$progress$.subMessage}</span>
+        {/if}
+      </span>
     </div>
   </div>
+
+  <a
+    class="trakt-link"
+    class:dim={!$isDone$}
+    href="https://app.trakt.tv/settings/data?source=trakt-csv"
+    target="_blank"
+    rel="noreferrer"
+  >▶ Import <code>activity_history.csv</code> into Trakt</a>
 </div>
 
 <style>
@@ -235,6 +254,10 @@
     flex-shrink: 0;
   }
 
+  .eta.done-label {
+    color: #00c06f;
+  }
+
   .msg {
     color: #555;
     overflow: hidden;
@@ -257,7 +280,15 @@
     font-size: 11px;
     color: #9f42c6;
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color 0.2s, opacity 0.3s;
+    flex-shrink: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .trakt-link.dim {
+    opacity: 0.3;
+    pointer-events: none;
   }
 
   .trakt-link code {
@@ -268,5 +299,33 @@
   .trakt-link:hover {
     color: #c060f0;
     text-decoration: underline;
+  }
+
+  /* ── Format toggle ── */
+  .format-toggle {
+    display: flex;
+    gap: 6px;
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    font-size: 11px;
+  }
+
+  .format-toggle input {
+    display: none;
+  }
+
+  .format-toggle label {
+    padding: 3px 10px;
+    border: 1px solid #333;
+    border-radius: 3px;
+    color: #555;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    user-select: none;
+  }
+
+  .format-toggle label.active {
+    color: #00e6f6;
+    border-color: #00e6f6;
+    text-shadow: 0 0 8px rgba(0, 230, 246, 0.4);
   }
 </style>
