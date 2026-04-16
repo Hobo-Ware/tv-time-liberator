@@ -135,7 +135,7 @@
   <a
     class="trakt-link"
     class:pending={!$isDone$}
-    href="https://app.trakt.tv/settings/data?source=trakt-csv"
+    href="https://app.trakt.tv/settings/data?source=tvtime"
     target="_blank"
     rel="noreferrer"
   >
