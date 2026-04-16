@@ -136,11 +136,17 @@
 
   <a
     class="trakt-link"
-    class:dim={!$isDone$}
+    class:pending={!$isDone$}
     href="https://app.trakt.tv/settings/data?source=trakt-csv"
     target="_blank"
     rel="noreferrer"
-  >▶ Import <code>activity_history.csv</code> into Trakt</a>
+  >
+    {#if $isDone$}
+      ▶ Import <code>activity_history.csv</code> into Trakt
+    {:else}
+      Trakt tip: use <code>activity_history.csv</code> after export finishes
+    {/if}
+  </a>
 </div>
 
 <style>
@@ -286,9 +292,9 @@
     text-align: center;
   }
 
-  .trakt-link.dim {
-    opacity: 0.3;
-    pointer-events: none;
+  .trakt-link.pending {
+    color: #7a6b8f;
+    opacity: 0.92;
   }
 
   .trakt-link code {
