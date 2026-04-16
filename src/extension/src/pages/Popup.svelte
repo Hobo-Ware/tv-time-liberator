@@ -103,7 +103,12 @@
         >▶ Import <code>activity_history.csv</code> into Trakt</a>
       {:else}
         <span class="eta">ETA {$progress$?.estimated}s</span>
-        <span class="msg">{$progress$?.message}</span>
+        <span class="msg">
+          {$progress$?.message}
+          {#if $progress$?.subMessage}
+            <span class="sub-msg">{$progress$.subMessage}</span>
+          {/if}
+        </span>
       {/if}
     </div>
   </div>
@@ -223,10 +228,18 @@
   .msg {
     color: #555;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     max-width: 72%;
     text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    white-space: nowrap;
+  }
+
+  .sub-msg {
+    color: #3a3a3a;
+    font-size: 10px;
   }
 
   .trakt-link {

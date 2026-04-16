@@ -77,8 +77,12 @@ export async function request<T>(url: string, options: RequestOptions = { respon
  * than PAGE_LIMIT or an empty array.
  *
  * @param urlFactory - Function that accepts a 1-based page number and returns the URL.
+ * @param onPage - Optional callback invoked after each page is fetched, with the current page number and running total.
  */
-export async function paginatedRequest<T>(urlFactory: (page: number) => string): Promise<T[]> {
+export async function paginatedRequest<T>(
+    urlFactory: (page: number) => string,
+    onPage?: (page: number, total: number) => void,
+): Promise<T[]> {
     const all: T[] = [];
     let page = 1;
 
@@ -87,6 +91,7 @@ export async function paginatedRequest<T>(urlFactory: (page: number) => string):
         const objects = response?.data?.objects ?? [];
 
         all.push(...objects);
+        onPage?.(page, all.length);
 
         if (objects.length < PAGE_LIMIT) break;
         page++;

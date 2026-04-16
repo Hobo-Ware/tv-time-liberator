@@ -32,7 +32,7 @@ export async function followedShows({
         paginatedRequest<ShowsListResponse["data"]["objects"][number]>(
             (page) => Resource.Get.Follows.Anime(userId, page),
         ),
-        fetchAllEpisodeWatches(userId),
+        fetchAllEpisodeWatches(userId, onProgress),
     ]);
 
     const objects = [...seriesObjects, ...animeObjects];
