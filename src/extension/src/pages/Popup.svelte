@@ -1,5 +1,6 @@
 <script lang="ts">
   import { defer, from, map, merge, Observable, switchMap, timer } from "rxjs";
+  import browser from "webextension-polyfill";
   import type { ProgressReport } from "../../../core/utils/ProgressReporter";
   import Button from "../components/Button.svelte";
   import ProgressBar from "../components/ProgressBar.svelte";
@@ -8,7 +9,6 @@
   import { listener } from "../request/listener/listener";
   import { Topic } from "../request/topic/Topic";
   import { verifyAuthorization } from "../request/topic/verifyAuthorization";
-  import browser from "webextension-polyfill";
 
   const authStatus$ = timer(0, 1000).pipe(
     switchMap(() => verifyAuthorization()),
@@ -97,7 +97,7 @@
       {#if $isDone$}
         <a
           class="trakt-link"
-          href="https://app.trakt.tv/settings/data?mode=media"
+          href="https://app.trakt.tv/settings/data?source=trakt-csv"
           target="_blank"
           rel="noreferrer"
         >▶ Import <code>activity_history.csv</code> into Trakt</a>
