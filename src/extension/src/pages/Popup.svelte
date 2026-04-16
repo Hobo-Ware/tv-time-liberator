@@ -104,18 +104,16 @@
     </Button>
   {/if}
 
-  {#if !$isLiberationInProgress$ && !$isDone$}
-    <div class="format-toggle">
-      <label class:active={exportFormat === 'zip'}>
-        <input type="radio" name="format" value="zip" bind:group={exportFormat} />
-        ZIP
-      </label>
-      <label class:active={exportFormat === 'files'}>
-        <input type="radio" name="format" value="files" bind:group={exportFormat} />
-        Files
-      </label>
-    </div>
-  {/if}
+  <div class="format-toggle" class:hidden={$isLiberationInProgress$ || $isDone$}>
+    <label class:active={exportFormat === 'zip'}>
+      <input type="radio" name="format" value="zip" bind:group={exportFormat} />
+      ZIP
+    </label>
+    <label class:active={exportFormat === 'files'}>
+      <input type="radio" name="format" value="files" bind:group={exportFormat} />
+      Files
+    </label>
+  </div>
 
   <div class="progress-section" class:visible={$isLiberationInProgress$ || $isDone$}>
     <ProgressBar progress={($progress$?.value?.current ?? 0) * 100} success={$isDone$} />
@@ -313,6 +311,11 @@
     gap: 6px;
     font-family: 'Share Tech Mono', 'Courier New', monospace;
     font-size: 11px;
+  }
+
+  .format-toggle.hidden {
+    visibility: hidden;
+    pointer-events: none;
   }
 
   .format-toggle input {
