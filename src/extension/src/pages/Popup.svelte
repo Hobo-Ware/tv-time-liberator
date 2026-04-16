@@ -2,14 +2,14 @@
   import { catchError, defer, from, map, merge, Observable, of, switchMap, timer } from "rxjs";
   import browser from "webextension-polyfill";
   import type { ProgressReport } from "../../../core/utils/ProgressReporter";
-  import type { AuthStatus } from "../request/topic/verifyAuthorization";
-  import type { ExportFormat } from "../request/topic/TopicPayloadMap";
   import Button from "../components/Button.svelte";
   import ProgressBar from "../components/ProgressBar.svelte";
   import { currentProgress } from "../request/emissions/currentProgress";
   import { extract } from "../request/emissions/extract";
   import { listener } from "../request/listener/listener";
   import { Topic } from "../request/topic/Topic";
+  import type { ExportFormat } from "../request/topic/TopicPayloadMap";
+  import type { AuthStatus } from "../request/topic/verifyAuthorization";
   import { verifyAuthorization } from "../request/topic/verifyAuthorization";
 
   let exportFormat: ExportFormat = $state('zip');

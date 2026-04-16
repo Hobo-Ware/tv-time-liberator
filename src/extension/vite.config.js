@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import webExtension, { readJsonFile } from 'vite-plugin-web-extension';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { defineConfig } from 'vite';
+import webExtension, { readJsonFile } from 'vite-plugin-web-extension';
 
 const manifest = readJsonFile('src/manifest.json');
 const pkg = readJsonFile('package.json');

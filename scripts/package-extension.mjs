@@ -1,9 +1,9 @@
-import { readFileSync, writeFileSync, existsSync, rmSync } from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import readline from 'node:readline/promises';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
 import { stdin as input, stdout as output } from 'node:process';
+import readline from 'node:readline/promises';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
