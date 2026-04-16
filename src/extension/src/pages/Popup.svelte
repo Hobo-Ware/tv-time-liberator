@@ -8,10 +8,14 @@
   import { listener } from "../request/listener/listener";
   import { Topic } from "../request/topic/Topic";
   import { verifyAuthorization } from "../request/topic/verifyAuthorization";
+  import browser from "webextension-polyfill";
 
-  const isAuthorized$ = timer(0, 1000).pipe(
+  const authStatus$ = timer(0, 1000).pipe(
     switchMap(() => verifyAuthorization()),
   );
+
+  const isAuthorized$ = authStatus$.pipe(map((s) => s === 'authorized'));
+  const isWrongTab$   = authStatus$.pipe(map((s) => s === 'wrong-tab'));
 
   const progressListener$ = from(
     new Observable<ProgressReport>((observer) =>
@@ -33,6 +37,10 @@
   const isLiberationInProgress$ = progress$.pipe(
     map((report) => !!report.message && !isNaN(report.total) && !report.done),
   );
+
+  function openTvTime() {
+    browser.tabs.create({ url: 'https://app.tvtime.com' });
+  }
 </script>
 
 <div class="app">
@@ -57,23 +65,31 @@
       Liberation in progress...
     {:else if $isAuthorized$}
       Liberation is one click away 👇
+    {:else if $isWrongTab$}
+      Open TV Time first to get started
     {:else}
       Log into TV Time to liberate your data!
     {/if}
   </p>
 
-  <Button
-    disabled={!$isAuthorized$ || $isLiberationInProgress$}
-    onclick={extract}
-  >
-    {#if $isDone$}
-      Liberate again
-    {:else if !$isLiberationInProgress$}
-      Liberate
-    {:else}
-      {($progress$?.value?.current * 100).toFixed(2)}%
-    {/if}
-  </Button>
+  {#if $isWrongTab$ && !$isLiberationInProgress$ && !$isDone$}
+    <Button onclick={openTvTime}>
+      Open TV Time →
+    </Button>
+  {:else}
+    <Button
+      disabled={!$isAuthorized$ || $isLiberationInProgress$}
+      onclick={extract}
+    >
+      {#if $isDone$}
+        Liberate again
+      {:else if !$isLiberationInProgress$}
+        Liberate
+      {:else}
+        {($progress$?.value?.current * 100).toFixed(2)}%
+      {/if}
+    </Button>
+  {/if}
 
   <div class="progress-section" class:visible={$isLiberationInProgress$ || $isDone$}>
     <ProgressBar progress={$progress$?.value?.current * 100} success={$isDone$} />
@@ -168,6 +184,7 @@
   .dot.ready   { background: #00e6f6; box-shadow: 0 0 6px #00e6f6; }
   .dot.running { background: #f5a623; box-shadow: 0 0 6px #f5a623; animation: pulse 1s ease-in-out infinite; }
   .dot.done    { background: #00c06f; box-shadow: 0 0 6px #00c06f; }
+  /* idle covers wrong-tab (dark dot) */
 
   @keyframes pulse {
     0%, 100% { opacity: 1; }
