@@ -1,16 +1,14 @@
 <script lang="ts">
-    import { createBubbler } from 'svelte/legacy';
-
-    const bubble = createBubbler();
     interface Props {
         disabled?: boolean;
+        onclick?: (e: MouseEvent) => void;
         children?: import('svelte').Snippet;
     }
 
-    let { disabled = false, children }: Props = $props();
+    let { disabled = false, onclick, children }: Props = $props();
 </script>
 
-<button disabled={disabled} onclick={bubble('click')}>
+<button {disabled} {onclick}>
     {@render children?.()}
 </button>
 

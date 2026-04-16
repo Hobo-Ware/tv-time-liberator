@@ -1,27 +1,20 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html,
 body {
-  width: 420px;
-  height: 240px;
+  width: 320px;
+  height: 220px;
   padding: 0;
   margin: 0;
   color: white;
 }
 
 body {
-  background-color: rgb(36, 36, 36);
+  background-color: #0d0d0d;
 }
 
 body > div {
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  align-items: center;
-  justify-content: center;
-}
-
-h1 {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 0;
 }
