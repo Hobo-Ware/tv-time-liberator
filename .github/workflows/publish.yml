@@ -32,7 +32,9 @@ jobs:
         run: bun extension:build
 
       - name: Archive extension
-        run: zip -r tv-time-liberator.zip src/extension/dist
+        run: |
+          cd src/extension/dist
+          zip -r ../../../tv-time-liberator.zip .
 
       - name: Upload to Chrome Web Store
         uses: mobilefirstllc/cws-publish@latest
