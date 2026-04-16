@@ -13,7 +13,7 @@ import { emit } from "./request/emitter/emit";
 import { listener } from "./request/listener/listener";
 import { Topic } from "./request/topic/Topic";
 import { LocalStore } from "./store";
-import { download } from "./utils/download";
+import { downloadZip } from "./utils/download";
 
 console.log("--- TV Time Liberator Loaded ---");
 
@@ -53,32 +53,25 @@ async function extract() {
     };
 
     const movies = await followedMovies(config);
-
-    download("movies.json", JSON.stringify(movies, null, 2));
-
     const shows = await followedShows(config);
-    download("shows.json", JSON.stringify(shows, null, 2));
-
-    download("activity_history.csv", toCsv({ movies, shows }));
-
     const favorites = await favoriteList(config);
-    download("favorites.json", JSON.stringify(favorites, null, 2));
-    download("favorites.csv", toCsv(favorites));
-
     const lists = await myLists(config);
-    download("lists.json", JSON.stringify(lists, null, 2));
+
+    const files: Record<string, string> = {
+        "movies.json": JSON.stringify(movies, null, 2),
+        "shows.json": JSON.stringify(shows, null, 2),
+        "activity_history.csv": toCsv({ movies, shows }),
+        "favorites.json": JSON.stringify(favorites, null, 2),
+        "favorites.csv": toCsv(favorites),
+        "lists.json": JSON.stringify(lists, null, 2),
+    };
+
     for (const list of lists) {
-        const listFilename = `list_${
-            list.name.toLowerCase().replace(/ /g, "_")
-        }.csv`;
-        download(
-            listFilename,
-            toCsv({
-                movies: list.movies,
-                shows: list.shows,
-            }),
-        );
+        const listFilename = `list_${list.name.toLowerCase().replace(/ /g, "_")}.csv`;
+        files[listFilename] = toCsv({ movies: list.movies, shows: list.shows });
     }
+
+    downloadZip(files);
 }
 
 function isAuthorized(): boolean {
