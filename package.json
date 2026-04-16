@@ -21,6 +21,7 @@
   "scripts": {
     "extension": "cd src/extension && bun dev",
     "extension:build": "cd src/extension && bun run build",
+    "extension:package": "bun run scripts/package-extension.mjs",
     "cli": "bun run src/cli/index.ts",
     "tester": "bun test src --timeout 30000 --bail"
   },

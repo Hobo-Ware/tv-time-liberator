@@ -35,6 +35,15 @@ Frustrated with your data being held hostage by TV Time? This script will libera
 1. Click on the extension icon
 1. Liberate your data
 
+#### Local Release Package
+1. Run `bun run extension:package`
+1. Enter a version (for example `1.2.3`) when prompted
+1. The command updates `src/extension/package.json`, builds the extension, and creates `tv-time-liberator-<version>.zip` at the repository root
+
+You can also pass the version directly:
+
+`bun run extension:package -- 1.2.3`
+
 ## Output
 
 ### Shows
