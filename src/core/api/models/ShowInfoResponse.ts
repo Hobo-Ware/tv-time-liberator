@@ -3,18 +3,19 @@ export interface ShowInfoResponse {
     id: number;
     name: string;
   }
-  
+
   interface Season {
     id: string;
     number: number;
     episode_watched_count: number;
     episodes: Episode[];
   }
-  
+
   interface Episode {
     is_watched: boolean;
     id: number;
     number: number;
     is_special: boolean;
+    rating?: number | null;
   }
   

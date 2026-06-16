@@ -7,12 +7,14 @@ import { toIMDB } from './toIMDB';
 
 type GetSeriesOptions = {
     id: string;
+    userId?: string;
     imdbResolver?: typeof toIMDB;
     onProgress?: ProgressCallback;
 }
 
 export async function getShow({
     id,
+    userId,
     imdbResolver = toIMDB,
     onProgress = () => { },
 }: GetSeriesOptions): Promise<Omit<Show, 'created_at' | 'status'>> {
@@ -28,6 +30,7 @@ export async function getShow({
 
     const seasons = await getShowSeasons({
         id: tvdb,
+        userId,
         imdbResolver,
         onProgress,
     });

@@ -2,10 +2,12 @@ import { request, Resource } from '../http';
 import type { Season } from '../types/Season';
 import { ProgressCallback, ProgressReporter } from '../utils/ProgressReporter';
 import type { ShowInfoResponse } from './models/ShowInfoResponse';
+import { getEpisodeRating } from './ratings';
 import { toIMDB } from './toIMDB';
 
 type SeriesInfoOptions = {
     id: number;
+    userId?: string;
     imdbResolver?: typeof toIMDB;
     onProgress?: ProgressCallback;
     /**
@@ -18,6 +20,7 @@ type SeriesInfoOptions = {
 
 export async function getShowSeasons({
     id,
+    userId,
     imdbResolver = toIMDB,
     onProgress = () => { },
     watchedAtMap,
@@ -42,6 +45,10 @@ export async function getShowSeasons({
                 ? (watchedAtMap.get(episode.id) ?? null)
                 : (await request<{ watched_date: string }>(Resource.Get.Episode.Info(episode.id))).watched_date;
 
+            const rating = userId != null
+                ? await getEpisodeRating(episode.id, userId)
+                : null;
+
             const extendedEpisode = {
                 id: {
                     tvdb: episode.id,
@@ -51,6 +58,7 @@ export async function getShowSeasons({
                 special: episode.is_special,
                 is_watched: episode.is_watched,
                 watched_at,
+                rating,
             };
 
             progress.increment(1);

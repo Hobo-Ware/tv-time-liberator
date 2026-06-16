@@ -3,6 +3,7 @@ import type { Movie } from '../types/Movie';
 import { assertDefined } from '../utils/assertDefined';
 import { ProgressCallback, ProgressReporter } from '../utils/ProgressReporter';
 import type { MovieEntry } from './models/MovieEntry';
+import { getMovieRating } from './ratings';
 import { toIMDB } from './toIMDB';
 
 type FollowedMoviesOptions = {
@@ -15,6 +16,9 @@ type FollowedMoviesOptions = {
  * Retrieves a list of followed movies.
  * @returns {Array} An array of movie objects.
  */
+const MOVIE_INCREMENT = .5;
+const RATING_INCREMENT = .5;
+
 export async function followedMovies({
     userId,
     imdbResolver = toIMDB,
@@ -45,8 +49,11 @@ export async function followedMovies({
 
         const imdb = await imdbResolver({ id: parseInt(tvdb), type: 'movie' });
 
-        progress.increment(1);
+        progress.increment(MOVIE_INCREMENT);
         progress.report(title);
+
+        const rating = await getMovieRating(movie.uuid, userId);
+        progress.increment(RATING_INCREMENT);
 
         liberatedMovies.push({
             id: {
@@ -58,6 +65,7 @@ export async function followedMovies({
             title,
             watched_at: movie.watched_at,
             is_watched: movie.watched_at != null,
+            rating,
         });
     }
 

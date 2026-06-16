@@ -76,8 +76,9 @@ export async function followedShows({
     for (const show of shows) {
         progress.report(show.title);
 
-        const info = await getShowSeasons({
+        const seasons = await getShowSeasons({
             id: show.id.tvdb,
+            userId,
             onProgress: ({ message, value: { previous, current } }) => {
                 progress.increment(SEASONS_INCREMENT * (current - previous));
                 progress.report(`${show.title} - ${message}`);
@@ -88,7 +89,7 @@ export async function followedShows({
 
         liberatedShows.push({
             ...show,
-            seasons: info,
+            seasons,
         });
     }
 

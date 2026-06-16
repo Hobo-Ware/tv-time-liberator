@@ -6,4 +6,5 @@ export type Movie = {
     uuid: string;
     title: string;
     created_at: string;
+    rating: number | null;
 } & WatchInfo;
