@@ -1,6 +1,8 @@
 import { request, Resource } from '../http';
 import type { Season } from '../types/Season';
+import { normalizeWatchedAt } from '../utils/normalizeWatchedAt';
 import { ProgressCallback, ProgressReporter } from '../utils/ProgressReporter';
+import { fetchAllEpisodeWatches } from './episodeWatches';
 import type { ShowInfoResponse } from './models/ShowInfoResponse';
 import { getEpisodeRating } from './ratings';
 import { toIMDB } from './toIMDB';
@@ -29,6 +31,9 @@ export async function getShowSeasons({
 
     const { seasons = [] } = await request<ShowInfoResponse>(url);
 
+    const resolvedWatchedAtMap = watchedAtMap
+        ?? (userId != null ? await fetchAllEpisodeWatches(userId) : undefined);
+
     const progress = new ProgressReporter(
         seasons.reduce((acc, season) => acc + season.episodes.length, 0),
         onProgress,
@@ -41,9 +46,9 @@ export async function getShowSeasons({
         for (let j = 0; j < season.episodes.length; j++) {
             const episode = season.episodes[j];
 
-            const watched_at = watchedAtMap
-                ? (watchedAtMap.get(episode.id) ?? null)
-                : (await request<{ watched_date: string }>(Resource.Get.Episode.Info(episode.id))).watched_date;
+            const watched_at = resolvedWatchedAtMap
+                ? (resolvedWatchedAtMap.get(episode.id) ?? null)
+                : normalizeWatchedAt((await request<{ watched_date: string }>(Resource.Get.Episode.Info(episode.id))).watched_date);
 
             const rating = userId != null
                 ? await getEpisodeRating(episode.id, userId)

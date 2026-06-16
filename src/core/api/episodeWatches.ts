@@ -1,4 +1,5 @@
 import { paginatedRequest, Resource } from '../http';
+import { normalizeWatchedAt } from '../utils/normalizeWatchedAt';
 import type { ProgressCallback } from '../utils/ProgressReporter';
 
 type EpisodeWatchEntry = {
@@ -29,5 +30,5 @@ export async function fetchAllEpisodeWatches(
         (entry) => entry.episode_id,
     );
 
-    return new Map(entries.map(e => [e.episode_id, e.watched_at ?? null]));
+    return new Map(entries.map(e => [e.episode_id, normalizeWatchedAt(e.watched_at)]));
 }
