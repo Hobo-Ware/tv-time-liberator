@@ -44,7 +44,7 @@ export const station_eleven_stopped = {
                     "number": 1,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13T10:50:29.147929Z",
+                    "watched_at": "2024-09-13T10:50:29.147Z",
                     "rating": null
                 },
                 {
@@ -55,7 +55,7 @@ export const station_eleven_stopped = {
                     "number": 2,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13T10:50:29.8267Z",
+                    "watched_at": "2024-09-13T10:50:29.826Z",
                     "rating": null
                 },
                 {
@@ -66,7 +66,7 @@ export const station_eleven_stopped = {
                     "number": 3,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13T10:50:30.153123Z",
+                    "watched_at": "2024-09-13T10:50:30.153Z",
                     "rating": null
                 },
                 {
@@ -77,7 +77,7 @@ export const station_eleven_stopped = {
                     "number": 4,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13T10:50:30.50706Z",
+                    "watched_at": "2024-09-13T10:50:30.507Z",
                     "rating": null
                 },
                 {
@@ -172,7 +172,7 @@ export const chernobyl_up_to_date = {
                     "number": 1,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13T10:50:40.855501Z",
+                    "watched_at": "2024-09-13T10:50:40.855Z",
                     "rating": null
                 },
                 {
@@ -183,7 +183,7 @@ export const chernobyl_up_to_date = {
                     "number": 2,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13T10:50:49.127216Z",
+                    "watched_at": "2024-09-13T10:50:49.127Z",
                     "rating": null
                 },
                 {
@@ -194,7 +194,7 @@ export const chernobyl_up_to_date = {
                     "number": 3,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13T10:50:49.127221Z",
+                    "watched_at": "2024-09-13T10:50:49.127Z",
                     "rating": null
                 },
                 {
@@ -205,7 +205,7 @@ export const chernobyl_up_to_date = {
                     "number": 4,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13T10:50:49.127225Z",
+                    "watched_at": "2024-09-13T10:50:49.127Z",
                     "rating": null
                 },
                 {
@@ -216,7 +216,7 @@ export const chernobyl_up_to_date = {
                     "number": 5,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13T10:50:49.127228Z",
+                    "watched_at": "2024-09-13T10:50:49.127Z",
                     "rating": null
                 }
             ]
@@ -245,7 +245,7 @@ export const house_usher_continuing = {
                     "number": 1,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13T10:50:57.842239Z",
+                    "watched_at": "2024-09-13T10:50:57.842Z",
                     "rating": null
                 },
                 {
@@ -256,7 +256,7 @@ export const house_usher_continuing = {
                     "number": 2,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13T10:50:58.421492Z",
+                    "watched_at": "2024-09-13T10:50:58.421Z",
                     "rating": null
                 },
                 {
@@ -267,7 +267,7 @@ export const house_usher_continuing = {
                     "number": 3,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13T10:50:58.78649Z",
+                    "watched_at": "2024-09-13T10:50:58.786Z",
                     "rating": 8
                 },
                 {
