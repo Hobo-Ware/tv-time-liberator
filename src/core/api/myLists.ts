@@ -55,6 +55,7 @@ export async function myLists({
             if (item.type === MediaType.Show) {
                 const info = await getShow({
                     id: item.uuid,
+                    userId,
                     imdbResolver,
                     onProgress: ({ value: { current, previous }, message }) => {
                         progress.increment(current - previous);
@@ -71,6 +72,7 @@ export async function myLists({
             if (item.type === MediaType.Movie) {
                 const info = await getMovie({
                     id: item.uuid,
+                    userId,
                     imdbResolver,
                 });
 
