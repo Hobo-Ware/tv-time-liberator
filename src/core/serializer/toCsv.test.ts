@@ -21,10 +21,10 @@ describe("toCsv", () => {
             "imdb_id,tvdb_id,type,title,season,episode,is_special,is_watched,watched_at,status,is_watchlisted,rating\r",
         );
         expect(nobody).toBe(
-            `${mr_nobody_watched.id?.imdb},${mr_nobody_watched.id?.tvdb},movie,${mr_nobody_watched.title},,,false,${mr_nobody_watched.is_watched},${mr_nobody_watched.watched_at},,false,\r`,
+            `${mr_nobody_watched.id?.imdb},${mr_nobody_watched.id?.tvdb},movie,${mr_nobody_watched.title},,,false,${mr_nobody_watched.is_watched},${mr_nobody_watched.watched_at},,false,${mr_nobody_watched.rating ?? ""}\r`,
         );
         expect(matrix).toBe(
-            `${the_matrix_not_watched.id?.imdb},${the_matrix_not_watched.id?.tvdb},movie,${the_matrix_not_watched.title},,,false,${the_matrix_not_watched.is_watched},,,true,\r`,
+            `${the_matrix_not_watched.id?.imdb},${the_matrix_not_watched.id?.tvdb},movie,${the_matrix_not_watched.title},,,false,${the_matrix_not_watched.is_watched},,,true,${the_matrix_not_watched.rating ?? ""}\r`,
         );
     });
 
@@ -53,6 +53,7 @@ describe("toCsv", () => {
                                 number: episode,
                                 is_watched,
                                 watched_at,
+                                rating,
                             },
                         ) => {
                             if (!is_watched) {
@@ -60,7 +61,7 @@ describe("toCsv", () => {
                             }
                             const row = rest.shift();
                             expect(row).toBe(
-                                `${id?.imdb},${id?.tvdb},episode,${chernobyl_up_to_date.title},${season},${episode},${special},${is_watched},${watched_at},${chernobyl_up_to_date.status},false,\r`,
+                                `${id?.imdb},${id?.tvdb},episode,${chernobyl_up_to_date.title},${season},${episode},${special},${is_watched},${watched_at},${chernobyl_up_to_date.status},false,${rating ?? ""}\r`,
                             );
                         },
                     );
@@ -77,6 +78,7 @@ describe("toCsv", () => {
                                 number: episode,
                                 is_watched,
                                 watched_at,
+                                rating,
                             },
                         ) => {
                             if (!is_watched) {
@@ -86,7 +88,7 @@ describe("toCsv", () => {
                             expect(row).toBe(
                                 `${id?.imdb},${id?.tvdb},episode,${house_usher_continuing.title},${season},${episode},${special},${is_watched},${
                                     watched_at ?? ""
-                                },${house_usher_continuing.status},${watched_at == null},\r`,
+                                },${house_usher_continuing.status},${watched_at == null},${rating ?? ""}\r`,
                             );
                         },
                     );
