@@ -268,7 +268,7 @@ export const house_usher_continuing = {
                     "special": false,
                     "is_watched": true,
                     "watched_at": "2024-09-13 10:50:58",
-                    "rating": null
+                    "rating": 8
                 },
                 {
                     "id": {
