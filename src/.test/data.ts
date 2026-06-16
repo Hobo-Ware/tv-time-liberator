@@ -7,7 +7,8 @@ export const mr_nobody_watched = {
     "uuid": "409c29e8-8daf-41bd-843a-8a217320d374",
     "title": "Mr. Nobody",
     "watched_at": "2024-09-13T10:49:37Z",
-    "is_watched": true
+    "is_watched": true,
+    "rating": 10
 };
 
 export const the_matrix_not_watched = {
@@ -18,7 +19,8 @@ export const the_matrix_not_watched = {
     "created_at": "2024-09-13T10:49:58Z",
     "uuid": "978899c4-5194-4568-b922-0bd2874c4c1a",
     "title": "The Matrix",
-    "is_watched": false
+    "is_watched": false,
+    "rating": null
 }
 
 export const station_eleven_stopped = {
@@ -42,7 +44,8 @@ export const station_eleven_stopped = {
                     "number": 1,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:29"
+                    "watched_at": "2024-09-13 10:50:29",
+                    "rating": null
                 },
                 {
                     "id": {
@@ -52,7 +55,8 @@ export const station_eleven_stopped = {
                     "number": 2,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:29"
+                    "watched_at": "2024-09-13 10:50:29",
+                    "rating": null
                 },
                 {
                     "id": {
@@ -62,7 +66,8 @@ export const station_eleven_stopped = {
                     "number": 3,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:30"
+                    "watched_at": "2024-09-13 10:50:30",
+                    "rating": null
                 },
                 {
                     "id": {
@@ -72,7 +77,8 @@ export const station_eleven_stopped = {
                     "number": 4,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:30"
+                    "watched_at": "2024-09-13 10:50:30",
+                    "rating": null
                 },
                 {
                     "id": {
@@ -82,7 +88,8 @@ export const station_eleven_stopped = {
                     "number": 5,
                     "special": false,
                     "is_watched": false,
-                    "watched_at": null
+                    "watched_at": null,
+                    "rating": null
                 },
                 {
                     "id": {
@@ -92,7 +99,8 @@ export const station_eleven_stopped = {
                     "number": 6,
                     "special": false,
                     "is_watched": false,
-                    "watched_at": null
+                    "watched_at": null,
+                    "rating": null
                 },
                 {
                     "id": {
@@ -102,7 +110,8 @@ export const station_eleven_stopped = {
                     "number": 7,
                     "special": false,
                     "is_watched": false,
-                    "watched_at": null
+                    "watched_at": null,
+                    "rating": null
                 },
                 {
                     "id": {
@@ -112,7 +121,8 @@ export const station_eleven_stopped = {
                     "number": 8,
                     "special": false,
                     "is_watched": false,
-                    "watched_at": null
+                    "watched_at": null,
+                    "rating": null
                 },
                 {
                     "id": {
@@ -122,7 +132,8 @@ export const station_eleven_stopped = {
                     "number": 9,
                     "special": false,
                     "is_watched": false,
-                    "watched_at": null
+                    "watched_at": null,
+                    "rating": null
                 },
                 {
                     "id": {
@@ -132,7 +143,8 @@ export const station_eleven_stopped = {
                     "number": 10,
                     "special": false,
                     "is_watched": false,
-                    "watched_at": null
+                    "watched_at": null,
+                    "rating": null
                 }
             ]
         }
@@ -160,7 +172,8 @@ export const chernobyl_up_to_date = {
                     "number": 1,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:40"
+                    "watched_at": "2024-09-13 10:50:40",
+                    "rating": null
                 },
                 {
                     "id": {
@@ -170,7 +183,8 @@ export const chernobyl_up_to_date = {
                     "number": 2,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:49"
+                    "watched_at": "2024-09-13 10:50:49",
+                    "rating": null
                 },
                 {
                     "id": {
@@ -180,7 +194,8 @@ export const chernobyl_up_to_date = {
                     "number": 3,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:49"
+                    "watched_at": "2024-09-13 10:50:49",
+                    "rating": null
                 },
                 {
                     "id": {
@@ -190,7 +205,8 @@ export const chernobyl_up_to_date = {
                     "number": 4,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:49"
+                    "watched_at": "2024-09-13 10:50:49",
+                    "rating": null
                 },
                 {
                     "id": {
@@ -200,7 +216,8 @@ export const chernobyl_up_to_date = {
                     "number": 5,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:49"
+                    "watched_at": "2024-09-13 10:50:49",
+                    "rating": null
                 }
             ]
         }
@@ -228,7 +245,8 @@ export const house_usher_continuing = {
                     "number": 1,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:57"
+                    "watched_at": "2024-09-13 10:50:57",
+                    "rating": null
                 },
                 {
                     "id": {
@@ -238,7 +256,8 @@ export const house_usher_continuing = {
                     "number": 2,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:58"
+                    "watched_at": "2024-09-13 10:50:58",
+                    "rating": null
                 },
                 {
                     "id": {
@@ -248,7 +267,8 @@ export const house_usher_continuing = {
                     "number": 3,
                     "special": false,
                     "is_watched": true,
-                    "watched_at": "2024-09-13 10:50:58"
+                    "watched_at": "2024-09-13 10:50:58",
+                    "rating": null
                 },
                 {
                     "id": {
@@ -258,7 +278,8 @@ export const house_usher_continuing = {
                     "number": 4,
                     "special": false,
                     "is_watched": false,
-                    "watched_at": null
+                    "watched_at": null,
+                    "rating": null
                 },
                 {
                     "id": {
@@ -268,7 +289,8 @@ export const house_usher_continuing = {
                     "number": 5,
                     "special": false,
                     "is_watched": false,
-                    "watched_at": null
+                    "watched_at": null,
+                    "rating": null
                 },
                 {
                     "id": {
@@ -278,7 +300,8 @@ export const house_usher_continuing = {
                     "number": 6,
                     "special": false,
                     "is_watched": false,
-                    "watched_at": null
+                    "watched_at": null,
+                    "rating": null
                 },
                 {
                     "id": {
@@ -288,7 +311,8 @@ export const house_usher_continuing = {
                     "number": 7,
                     "special": false,
                     "is_watched": false,
-                    "watched_at": null
+                    "watched_at": null,
+                    "rating": null
                 },
                 {
                     "id": {
@@ -298,7 +322,8 @@ export const house_usher_continuing = {
                     "number": 8,
                     "special": false,
                     "is_watched": false,
-                    "watched_at": null
+                    "watched_at": null,
+                    "rating": null
                 }
             ]
         }
@@ -314,6 +339,7 @@ export const alien_unwatched = {
     "uuid": "2441a861-c846-4a3c-b365-32f720426143",
     "title": "Alien",
     "is_watched": false,
+    "rating": null,
     "added_at": "2024-09-19T20:33:52Z"
 };
 
@@ -336,7 +362,8 @@ export const the_triangle_unwatched = {
                     "number": 1,
                     "special": false,
                     "is_watched": false,
-                    "watched_at": null
+                    "watched_at": null,
+                    "rating": null
                 },
                 {
                     "id": {
@@ -346,7 +373,8 @@ export const the_triangle_unwatched = {
                     "number": 2,
                     "special": false,
                     "is_watched": false,
-                    "watched_at": null
+                    "watched_at": null,
+                    "rating": null
                 },
                 {
                     "id": {
@@ -356,7 +384,8 @@ export const the_triangle_unwatched = {
                     "number": 3,
                     "special": false,
                     "is_watched": false,
-                    "watched_at": null
+                    "watched_at": null,
+                    "rating": null
                 }
             ]
         }
