@@ -7,5 +7,6 @@ export type Season = {
         number: number;
         special: boolean;
         id: MediaIdentifier;
+        rating: number | null;
     } & WatchInfo>;
 };

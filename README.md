@@ -71,6 +71,7 @@ You can also pass the version directly:
                         "special": false,
                         "is_watched": true,
                         "watched_at": "1989-12-25 00:00:00",
+                        "rating": 5
                     },
                     ...
                 ]
@@ -92,7 +93,8 @@ You can also pass the version directly:
         },
         "created_at": "2024-09-13T10:49:58Z",
         "title": "The Matrix",
-        "is_watched": false
+        "is_watched": false,
+        "rating": 8
     },
     ...
 ]

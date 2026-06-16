@@ -2,15 +2,18 @@ import { request, Resource } from '../http';
 import { Movie } from '../types/Movie';
 import { assertDefined } from '../utils/assertDefined';
 import { MovieResponse } from './models/MovieResponse';
+import { getMovieRating } from './ratings';
 import { toIMDB } from './toIMDB';
 
 type GetMovieOptions = {
     id: string;
+    userId?: string;
     imdbResolver?: typeof toIMDB;
 }
 
 export async function getMovie({
     id,
+    userId,
     imdbResolver = toIMDB,
 }: GetMovieOptions): Promise<Omit<Movie, 'is_watched'>> {
     const movie = await request<MovieResponse>(Resource.Get.Movie.GetByUUID(id))
@@ -34,5 +37,6 @@ export async function getMovie({
         created_at: movie.created_at,
         uuid: movie.uuid,
         title: movie.name,
+        rating: userId != null ? await getMovieRating(movie.uuid, userId) : null,
     };
 }

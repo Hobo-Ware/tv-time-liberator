@@ -14,6 +14,7 @@ const header = [
     "watched_at",
     "status",
     "is_watchlisted",
+    "rating",
 ];
 
 type CsvParams = {
@@ -30,6 +31,7 @@ export function toCsv({
             title,
             is_watched,
             watched_at,
+            rating,
         }) => [
             id?.imdb,
             id?.tvdb,
@@ -42,6 +44,7 @@ export function toCsv({
             watched_at,
             "",
             watched_at == null,
+            rating ?? "",
         ]);
 
     const episodesCsvEntries = shows
@@ -62,6 +65,7 @@ export function toCsv({
                         number: episode,
                         is_watched,
                         watched_at,
+                        rating,
                     }) => [
                         id?.imdb,
                         id?.tvdb,
@@ -74,6 +78,7 @@ export function toCsv({
                         watched_at,
                         status,
                         watched_at == null,
+                        rating ?? "",
                     ])
             )
         );
@@ -101,6 +106,7 @@ export function toCsv({
                 "",
                 status,
                 hasUnwatchedEpisode,
+                "",
             ]]
         });
 

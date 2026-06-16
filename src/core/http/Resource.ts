@@ -59,6 +59,20 @@ export const Resource = {
             Movies: (userId: string, page = 1) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/tracking/cgw/follows/user/${userId}&entity_type=movie&sort=watched_date,desc&page=${page}&page_limit=500`,
         },
         EpisodeWatches: (userId: string, page = 1) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/tracking/watches/user/${userId}&entity_type=episode&page=${page}&page_limit=500`,
+        Ratings: {
+            /**
+             * The URL to fetch the rating set definition (rating_id → star position mapping).
+             */
+            Set: 'https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/live/v1/ratings/sets/stars_wording_scalev2',
+            /**
+             * The URL to fetch a single user's rating for a movie.
+             */
+            Movie: (movieUuid: string, userId: string) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/live/v1/ratings/votes/${movieUuid}/${userId}&set=stars_wording_scalev2`,
+            /**
+             * The URL to fetch a single user's rating for an episode.
+             */
+            Episode: (episodeId: number, userId: string) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/ratings/votes/episode/${episodeId}/${userId}&set=stars_wording_scalev2`,
+        },
         Movie: {
             GetByUUID: (uuid: string) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/movies/${uuid}`,
         },

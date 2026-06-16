@@ -44,6 +44,7 @@ export async function favoriteList({
 
         const info = await getMovie({
             id: movie.uuid,
+            userId,
             imdbResolver,
         });
         liberatedMovies.push({
@@ -58,6 +59,7 @@ export async function favoriteList({
         progress.report(show.name);
         const info = await getShow({
             id: show.uuid,
+            userId,
             imdbResolver,
             onProgress: ({ value: { current, previous }, message }) => {
                 progress.increment(current - previous);

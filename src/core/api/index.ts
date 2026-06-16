@@ -1,4 +1,5 @@
 export * from './episodeWatches';
+export * from './ratings';
 export * from './favoriteList';
 export * from './followedMovies';
 export * from './followedShows';
