@@ -3,6 +3,15 @@ export class MemoryDB {
         private _memory: Record<string, any> = {},
     ) { }
 
+    /**
+     * Returns the live in-memory object. Callers must treat it as read-only
+     * (e.g. to serialize the store when flushing to disk). It always reflects
+     * the current state, including after {@link deleteAll} replaces it.
+     */
+    snapshot(): Record<string, any> {
+        return this._memory;
+    }
+
     async get<T>(path: string): Promise<T | undefined> {
         const keys = path.split('.');
 
