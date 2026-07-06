@@ -2,9 +2,10 @@
 	interface Props {
 		progress?: number;
 		success?: boolean;
+		indeterminate?: boolean;
 	}
 
-	let { progress = 0, success = false }: Props = $props();
+	let { progress = 0, success = false, indeterminate = false }: Props = $props();
 </script>
 
 <style>
@@ -46,9 +47,25 @@
 		from { left: -40%; }
 		to   { left: 110%; }
 	}
+
+	/* Indeterminate: a chunk sweeps the track while totals are still unknown. */
+	.progress.indeterminate {
+		width: 40% !important;
+		position: absolute;
+		animation: indeterminate 1.4s ease-in-out infinite;
+	}
+
+	.progress-bar.indeterminate {
+		position: relative;
+	}
+
+	@keyframes indeterminate {
+		0%   { left: -40%; }
+		100% { left: 100%; }
+	}
 </style>
 
-<div class="progress-bar">
-	<div class="progress" class:success style="width: {progress}%"></div>
+<div class="progress-bar" class:indeterminate>
+	<div class="progress" class:success class:indeterminate style={indeterminate ? '' : `width: ${progress}%`}></div>
 </div>
 

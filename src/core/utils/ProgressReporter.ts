@@ -10,6 +10,7 @@ export type ProgressReport = {
     message: string;
     subMessage?: string;
     done?: boolean;
+    error?: boolean;
 };
 
 export type ProgressCallback = (report: ProgressReport) => void;
@@ -29,7 +30,8 @@ export class ProgressReporter {
     }
 
     report(message: string) {
-        const current = this._progress / this._total;
+        // Empty category (total 0) would yield 0/0 = NaN; treat as complete.
+        const current = this._total === 0 ? 1 : this._progress / this._total;
         this._eta.report(current);
         const eta = this._eta.estimate();
 
@@ -38,7 +40,7 @@ export class ProgressReporter {
                 current,
                 previous: this._previous,
             },
-            estimated: eta === Infinity ? 1 : parseInt(eta.toFixed(0), 10),
+            estimated: eta === Infinity ? Infinity : parseInt(eta.toFixed(0), 10),
             total: this._total,
             message,
         });

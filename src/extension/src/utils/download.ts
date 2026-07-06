@@ -28,5 +28,7 @@ export function downloadZip(files: Record<string, string>, zipName = 'tv-time-ex
     element.click();
     document.body.removeChild(element);
 
-    URL.revokeObjectURL(url);
+    // Revoke on the next tick: revoking synchronously can cancel the download
+    // before the browser has started reading the blob.
+    setTimeout(() => URL.revokeObjectURL(url), 0);
 }

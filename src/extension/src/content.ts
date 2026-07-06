@@ -17,13 +17,22 @@ import { download, downloadZip } from "./utils/download";
 
 console.log("--- TV Time Liberator Loaded ---");
 
-function readUser(): { id: string; login: string; name: string } {
-    return JSON.parse(JSON.parse(localStorage.getItem("flutter.user")!));
+function readUser(): { id: string; login: string; name: string } | null {
+    const raw = localStorage.getItem("flutter.user");
+    if (!raw) return null;
+    try {
+        return JSON.parse(JSON.parse(raw));
+    } catch {
+        return null;
+    }
 }
 
 function readToken(): string {
-    return localStorage.getItem("flutter.jwtToken")!.slice(1, -1);
+    return localStorage.getItem("flutter.jwtToken")?.slice(1, -1) ?? "";
 }
+
+const PHASE_COUNT = 4;
+let extracting = false;
 
 let reportSnapshot: ProgressReport = {
     total: NaN,
@@ -37,25 +46,33 @@ let reportSnapshot: ProgressReport = {
 emit(Topic.Progress, reportSnapshot);
 
 async function extract(format: 'zip' | 'files' = 'zip') {
-    const user: { login: string, id: string } = readUser();
+    const user = readUser()!;
     setAuthorizationHeader(readToken());
     setCache(LocalStore);
 
     console.log("Extracting...");
 
+    // Each phase reports its own 0..1 fraction; map it into one continuous
+    // 0..1 bar across all phases so progress never resets backward.
+    let phaseIndex = 0;
     const config = {
         userId: user.id ?? user.login,
         imdbResolver,
         onProgress: (report: ProgressReport) => {
-            reportSnapshot = report;
-            emit(Topic.Progress, report);
+            const frac = Number.isFinite(report.value?.current) ? report.value.current : 0;
+            const overall = Math.min(1, (phaseIndex + frac) / PHASE_COUNT);
+            reportSnapshot = {
+                ...report,
+                value: { current: overall, previous: reportSnapshot.value?.current ?? 0 },
+            };
+            emit(Topic.Progress, reportSnapshot);
         },
     };
 
-    const movies = await followedMovies(config);
-    const shows = await followedShows(config);
-    const favorites = await favoriteList(config);
-    const lists = await myLists(config);
+    const movies = await followedMovies(config); phaseIndex = 1;
+    const shows = await followedShows(config); phaseIndex = 2;
+    const favorites = await favoriteList(config); phaseIndex = 3;
+    const lists = await myLists(config); phaseIndex = 4;
 
     const files: Record<string, string> = {
         "movies.json": JSON.stringify(movies, null, 2),
@@ -82,22 +99,51 @@ async function extract(format: 'zip' | 'files' = 'zip') {
 
 function isAuthorized(): boolean {
     const user = readUser();
-    return !!user.name && user.name !== "Anonymous";
+    return !!user?.name && user.name !== "Anonymous";
 }
 
 listener(Topic.Export, async ({ format }) => {
-    await extract(format)
-        .then(() => {
-            reportSnapshot = {
-                ...reportSnapshot,
-                done: true,
-                value: { current: 1, previous: reportSnapshot.value?.current ?? 0 },
-                message: 'All done! Your data is free.',
-                estimated: 0,
-            };
-            emit(Topic.Progress, reportSnapshot);
-        })
-        .catch(console.error);
+    // Guard against double-clicks: a second concurrent extraction doubles
+    // memory + API load and crashed the tab in earlier versions.
+    if (extracting) {
+        return;
+    }
+    extracting = true;
+
+    // Emit immediately so the popup flips to "in progress" the instant the
+    // button is clicked, instead of sitting silent until the first page loads.
+    reportSnapshot = {
+        value: { current: 0, previous: 0 },
+        estimated: Infinity,
+        total: PHASE_COUNT,
+        message: 'Starting liberation...',
+    };
+    emit(Topic.Progress, reportSnapshot);
+
+    try {
+        await extract(format);
+        reportSnapshot = {
+            ...reportSnapshot,
+            done: true,
+            error: false,
+            value: { current: 1, previous: reportSnapshot.value?.current ?? 0 },
+            message: 'All done! Your data is free.',
+            estimated: 0,
+        };
+        emit(Topic.Progress, reportSnapshot);
+    } catch (error) {
+        console.error(error);
+        reportSnapshot = {
+            ...reportSnapshot,
+            done: false,
+            error: true,
+            message: 'Something went wrong. Refresh TV Time and try again.',
+            estimated: 0,
+        };
+        emit(Topic.Progress, reportSnapshot);
+    } finally {
+        extracting = false;
+    }
 });
 
 listener(Topic.CheckAuthorization, () => {

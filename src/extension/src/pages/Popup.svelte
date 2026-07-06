@@ -13,6 +13,9 @@
   import { verifyAuthorization } from "../request/topic/verifyAuthorization";
 
   let exportFormat: ExportFormat = $state('zip');
+  // Optimistic disable: covers the brief window between click and the first
+  // progress event so the button can't be double-triggered.
+  let starting = $state(false);
 
   type ExtendedAuthStatus = AuthStatus | 'unreachable';
 
@@ -45,9 +48,20 @@
     map((report) => !!report?.done),
   );
 
-  const isLiberationInProgress$ = progress$.pipe(
-    map((report) => !!report?.message && !isNaN(report?.total!) && !report?.done),
+  const isError$ = progress$.pipe(
+    map((report) => !!report?.error),
   );
+
+  const isLiberationInProgress$ = progress$.pipe(
+    map((report) => !!report?.message && !isNaN(report?.total!) && !report?.done && !report?.error),
+  );
+
+  // Clear the optimistic flag once the real state (progress / done / error) lands.
+  $effect(() => {
+    if ($isLiberationInProgress$ || $isDone$ || $isError$) {
+      starting = false;
+    }
+  });
 
   function openTvTime() {
     browser.tabs.create({ url: 'https://app.tvtime.com' });
@@ -65,19 +79,22 @@
   <p class="status">
     <span
       class="dot"
-      class:idle={!$isAuthorized$ && !$isLiberationInProgress$ && !$isDone$}
-      class:ready={!!$isAuthorized$ && !$isLiberationInProgress$ && !$isDone$}
+      class:idle={!$isAuthorized$ && !$isLiberationInProgress$ && !$isDone$ && !$isError$}
+      class:ready={!!$isAuthorized$ && !$isLiberationInProgress$ && !$isDone$ && !$isError$}
       class:running={!!$isLiberationInProgress$}
       class:done={!!$isDone$}
+      class:error={!!$isError$}
     ></span>
-    {#if $isDone$}
+    {#if $isError$}
+      Something went wrong - hit Retry
+    {:else if $isDone$}
       Your data has been liberated! 🎉
     {:else if $isLiberationInProgress$}
       Liberation in progress...
     {:else if $isAuthorized$}
       Liberation is one click away 👇
     {:else if $isUnreachable$}
-      Waiting for page...
+      Refresh the TV Time tab to continue
     {:else if $isWrongTab$}
       Open TV Time first to get started
     {:else}
@@ -91,15 +108,20 @@
     </Button>
   {:else}
     <Button
-      disabled={!$isAuthorized$ || $isLiberationInProgress$}
-      onclick={() => extract(exportFormat)}
+      disabled={!$isAuthorized$ || $isLiberationInProgress$ || starting}
+      onclick={() => { starting = true; extract(exportFormat); }}
     >
-      {#if $isDone$}
+      {#if $isLiberationInProgress$}
+        {@const pct = ($progress$?.value?.current ?? 0) * 100}
+        {#if pct > 0}{pct.toFixed(0)}%{:else}Working...{/if}
+      {:else if starting}
+        Starting...
+      {:else if $isError$}
+        Retry
+      {:else if $isDone$}
         Liberate again
-      {:else if !$isLiberationInProgress$}
-        Liberate
       {:else}
-        {(($progress$?.value?.current ?? 0) * 100).toFixed(2)}%
+        Liberate
       {/if}
     </Button>
   {/if}
@@ -116,12 +138,23 @@
   </div>
 
   <div class="progress-section" class:visible={$isLiberationInProgress$ || $isDone$}>
-    <ProgressBar progress={($progress$?.value?.current ?? 0) * 100} success={$isDone$} />
+    <ProgressBar
+      progress={($progress$?.value?.current ?? 0) * 100}
+      success={$isDone$}
+      indeterminate={!!$isLiberationInProgress$ && ($progress$?.value?.current ?? 0) === 0}
+    />
     <div class="progress-footer">
       {#if $isDone$}
         <span class="eta done-label">✓ Done!</span>
       {:else}
-        <span class="eta">ETA {$progress$?.estimated}s</span>
+        {@const est = $progress$?.estimated ?? 0}
+        <span class="eta">
+          {#if Number.isFinite(est) && est > 0}
+            ETA {est}s
+          {:else}
+            estimating...
+          {/if}
+        </span>
       {/if}
       <span class="msg">
         {$progress$?.message}
@@ -222,6 +255,7 @@
   .dot.ready   { background: #00e6f6; box-shadow: 0 0 6px #00e6f6; }
   .dot.running { background: #f5a623; box-shadow: 0 0 6px #f5a623; animation: pulse 1s ease-in-out infinite; }
   .dot.done    { background: #00c06f; box-shadow: 0 0 6px #00c06f; }
+  .dot.error   { background: #ff013c; box-shadow: 0 0 6px #ff013c; }
   /* idle covers wrong-tab (dark dot) */
 
   @keyframes pulse {

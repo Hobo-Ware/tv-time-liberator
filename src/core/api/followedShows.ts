@@ -28,9 +28,23 @@ export async function followedShows({
     const [seriesObjects, animeObjects, watchedAtMap] = await Promise.all([
         paginatedRequest<ShowsListResponse["data"]["objects"][number]>(
             (page) => Resource.Get.Follows.Shows(userId, page),
+            (page, total) => onProgress({
+                value: { current: 0, previous: 0 },
+                estimated: Infinity,
+                total: Infinity,
+                message: 'Fetching your shows...',
+                subMessage: `${total.toLocaleString()} loaded · page ${page}`,
+            }),
         ),
         paginatedRequest<ShowsListResponse["data"]["objects"][number]>(
             (page) => Resource.Get.Follows.Anime(userId, page),
+            (page, total) => onProgress({
+                value: { current: 0, previous: 0 },
+                estimated: Infinity,
+                total: Infinity,
+                message: 'Fetching your anime...',
+                subMessage: `${total.toLocaleString()} loaded · page ${page}`,
+            }),
         ),
         fetchAllEpisodeWatches(userId, onProgress),
     ]);

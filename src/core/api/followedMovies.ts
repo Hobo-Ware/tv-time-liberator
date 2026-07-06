@@ -26,6 +26,13 @@ export async function followedMovies({
 }: FollowedMoviesOptions): Promise<Movie[]> {
     const movies = await paginatedRequest<MovieEntry>(
         (page) => Resource.Get.Follows.Movies(userId, page),
+        (page, total) => onProgress({
+            value: { current: 0, previous: 0 },
+            estimated: Infinity,
+            total: Infinity,
+            message: 'Fetching your movies...',
+            subMessage: `${total.toLocaleString()} loaded · page ${page}`,
+        }),
     );
 
     const progress = new ProgressReporter(
