@@ -10,4 +10,5 @@ export type TopicPayloadMap = {
     [Topic.IMDB]: DereferrerOptions;
     [Topic.Progress]: ProgressReport;
     [Topic.CurrentProgress]: void;
+    [Topic.Download]: { filename: string; base64: string; mime: string };
 }

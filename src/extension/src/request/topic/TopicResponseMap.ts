@@ -8,4 +8,5 @@ export type TopicResponseMap = {
     [Topic.IMDB]: IMDBReference;
     [Topic.Progress]: void;
     [Topic.CurrentProgress]: ProgressReport;
+    [Topic.Download]: boolean;
 }

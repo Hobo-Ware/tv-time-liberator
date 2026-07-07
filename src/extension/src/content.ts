@@ -103,38 +103,46 @@ async function extract(format: 'zip' | 'files' = 'zip', includeEpisodeRatings = 
         },
     };
 
-    // Serialize each dataset as soon as it lands, then drop the object graph
-    // so peak heap holds strings - not the full object trees + strings + zip
-    // all at once. The shows graph (seasons/episodes) is the heaviest, so
-    // freeing it before favorites/lists/zip is what keeps big libraries alive.
-    const files: Record<string, string> = {};
+    // Long exports can outlive the JWT; TV Time renews it in localStorage, so
+    // re-read periodically to keep the auth header valid through the whole run.
+    const tokenRefresh = setInterval(() => setAuthorizationHeader(readToken()), 90_000);
 
-    let movies = await followedMovies(config); phaseIndex = 1;
-    let shows = await followedShows(config); phaseIndex = 2;
-    files["movies.json"] = JSON.stringify(movies, null, 2);
-    files["shows.json"] = JSON.stringify(shows, null, 2);
-    files["activity_history.csv"] = toCsv({ movies, shows });
-    movies = [];
-    shows = [];
+    try {
+        // Serialize each dataset as soon as it lands, then drop the object graph
+        // so peak heap holds strings - not the full object trees + strings + zip
+        // all at once. The shows graph (seasons/episodes) is the heaviest, so
+        // freeing it before favorites/lists/zip is what keeps big libraries alive.
+        const files: Record<string, string> = {};
 
-    let favorites = await favoriteList(config); phaseIndex = 3;
-    files["favorites.json"] = JSON.stringify(favorites, null, 2);
-    files["favorites.csv"] = toCsv(favorites);
-    favorites = { name: '', description: '', is_public: true, movies: [], shows: [] };
+        let movies = await followedMovies(config); phaseIndex = 1;
+        let shows = await followedShows(config); phaseIndex = 2;
+        files["movies.json"] = JSON.stringify(movies, null, 2);
+        files["shows.json"] = JSON.stringify(shows, null, 2);
+        files["activity_history.csv"] = toCsv({ movies, shows });
+        movies = [];
+        shows = [];
 
-    const lists = await myLists(config); phaseIndex = 4;
-    files["lists.json"] = JSON.stringify(lists, null, 2);
-    for (const list of lists) {
-        const listFilename = `list_${list.name.toLowerCase().replace(/ /g, "_")}.csv`;
-        files[listFilename] = toCsv({ movies: list.movies, shows: list.shows });
-    }
+        let favorites = await favoriteList(config); phaseIndex = 3;
+        files["favorites.json"] = JSON.stringify(favorites, null, 2);
+        files["favorites.csv"] = toCsv(favorites);
+        favorites = { name: '', description: '', is_public: true, movies: [], shows: [] };
 
-    if (format === 'zip') {
-        downloadZip(files);
-    } else {
-        for (const [filename, content] of Object.entries(files)) {
-            download(filename, content);
+        const lists = await myLists(config); phaseIndex = 4;
+        files["lists.json"] = JSON.stringify(lists, null, 2);
+        for (const list of lists) {
+            const listFilename = `list_${list.name.toLowerCase().replace(/ /g, "_")}.csv`;
+            files[listFilename] = toCsv({ movies: list.movies, shows: list.shows });
         }
+
+        if (format === 'zip') {
+            await downloadZip(files);
+        } else {
+            for (const [filename, content] of Object.entries(files)) {
+                await download(filename, content);
+            }
+        }
+    } finally {
+        clearInterval(tokenRefresh);
     }
 }
 
