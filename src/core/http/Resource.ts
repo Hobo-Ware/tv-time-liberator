@@ -59,6 +59,7 @@ export const Resource = {
             Movies: (userId: string, page = 1) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/tracking/cgw/follows/user/${userId}&entity_type=movie&sort=watched_date,desc&page_offset=${(page - 1) * 500}&page_limit=500`,
         },
         EpisodeWatches: (userId: string, page = 1) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/tracking/watches/user/${userId}&entity_type=episode&page_offset=${(page - 1) * 500}&page_limit=500`,
+        MovieWatches: (userId: string, page = 1) => `https://app.tvtime.com/sidecar?o=https://msapi.tvtime.com/prod/v1/tracking/watches/user/${userId}&entity_type=movie&page_offset=${(page - 1) * 500}&page_limit=500`,
         Ratings: {
             /**
              * The URL to fetch the rating set definition (rating_id → star position mapping).

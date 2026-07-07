@@ -8,6 +8,7 @@ export const mr_nobody_watched = {
     "title": "Mr. Nobody",
     "watched_at": "2024-09-13T10:49:37Z",
     "is_watched": true,
+    "rewatch_count": 2,
     "rating": 10
 };
 
@@ -20,6 +21,7 @@ export const the_matrix_not_watched = {
     "uuid": "978899c4-5194-4568-b922-0bd2874c4c1a",
     "title": "The Matrix",
     "is_watched": false,
+    "rewatch_count": 0,
     "rating": null
 }
 
