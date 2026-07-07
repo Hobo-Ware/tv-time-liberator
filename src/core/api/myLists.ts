@@ -12,12 +12,14 @@ type MyListsOptions = {
     userId: string;
     imdbResolver?: typeof toIMDB;
     onProgress?: ProgressCallback;
+    includeEpisodeRatings?: boolean;
 }
 
 export async function myLists({
     userId,
     imdbResolver = toIMDB,
     onProgress = () => { },
+    includeEpisodeRatings = false,
 }: MyListsOptions): Promise<List[]> {
     const url = Resource.Get.Lists(userId);
 
@@ -57,6 +59,7 @@ export async function myLists({
                     id: item.uuid,
                     userId,
                     imdbResolver,
+                    includeEpisodeRatings,
                     onProgress: ({ value: { current, previous }, message }) => {
                         progress.increment(current - previous);
                         progress.report(message);

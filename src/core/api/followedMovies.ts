@@ -33,6 +33,7 @@ export async function followedMovies({
             message: 'Fetching your movies...',
             subMessage: `${total.toLocaleString()} loaded · page ${page}`,
         }),
+        (movie) => movie.uuid,
     );
 
     const progress = new ProgressReporter(

@@ -10,6 +10,7 @@ type GetSeriesOptions = {
     userId?: string;
     imdbResolver?: typeof toIMDB;
     onProgress?: ProgressCallback;
+    includeEpisodeRatings?: boolean;
 }
 
 export async function getShow({
@@ -17,6 +18,7 @@ export async function getShow({
     userId,
     imdbResolver = toIMDB,
     onProgress = () => { },
+    includeEpisodeRatings = false,
 }: GetSeriesOptions): Promise<Omit<Show, 'created_at' | 'status'>> {
     const url = Resource.Get.Shows.GetByUUID(id);
 
@@ -33,6 +35,7 @@ export async function getShow({
         userId,
         imdbResolver,
         onProgress,
+        includeEpisodeRatings,
     });
 
     return {

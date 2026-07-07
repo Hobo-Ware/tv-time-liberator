@@ -14,7 +14,7 @@ describe('followedShows', () => {
 
         setAuthorizationHeader(token);
 
-        const shows = await followedShows({ userId });
+        const shows = await followedShows({ userId, includeEpisodeRatings: true });
 
         expect(shows).toBeArray();
         expect(shows).toBeArrayOfSize(3);

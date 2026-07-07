@@ -10,6 +10,7 @@ type FavoriteListOptions = {
     userId: string;
     imdbResolver?: typeof toIMDB;
     onProgress?: ProgressCallback;
+    includeEpisodeRatings?: boolean;
 }
 
 /**
@@ -20,6 +21,7 @@ export async function favoriteList({
     userId,
     imdbResolver = toIMDB,
     onProgress = () => { },
+    includeEpisodeRatings = false,
 }: FavoriteListOptions): Promise<List> {
     const movieUrl = Resource.Get.Favorites.Movies(userId);
     const movies = await request<FavoriteResponse>(movieUrl)
@@ -61,6 +63,7 @@ export async function favoriteList({
             id: show.uuid,
             userId,
             imdbResolver,
+            includeEpisodeRatings,
             onProgress: ({ value: { current, previous }, message }) => {
                 progress.increment(current - previous);
                 progress.report(`${show.name} - ${message}`);

@@ -14,6 +14,7 @@ type FollowedShowsOptions = {
     userId: string;
     imdbResolver?: typeof toIMDB;
     onProgress?: ProgressCallback;
+    includeEpisodeRatings?: boolean;
 };
 
 /**
@@ -24,6 +25,7 @@ export async function followedShows({
     userId,
     imdbResolver = toIMDB,
     onProgress = () => {},
+    includeEpisodeRatings = false,
 }: FollowedShowsOptions): Promise<Show[]> {
     const [seriesObjects, animeObjects, watchedAtMap] = await Promise.all([
         paginatedRequest<ShowsListResponse["data"]["objects"][number]>(
@@ -35,6 +37,7 @@ export async function followedShows({
                 message: 'Fetching your shows...',
                 subMessage: `${total.toLocaleString()} loaded · page ${page}`,
             }),
+            (object) => object.uuid,
         ),
         paginatedRequest<ShowsListResponse["data"]["objects"][number]>(
             (page) => Resource.Get.Follows.Anime(userId, page),
@@ -45,6 +48,7 @@ export async function followedShows({
                 message: 'Fetching your anime...',
                 subMessage: `${total.toLocaleString()} loaded · page ${page}`,
             }),
+            (object) => object.uuid,
         ),
         fetchAllEpisodeWatches(userId, onProgress),
     ]);
@@ -99,6 +103,7 @@ export async function followedShows({
             },
             imdbResolver,
             watchedAtMap,
+            includeEpisodeRatings,
         });
 
         liberatedShows.push({

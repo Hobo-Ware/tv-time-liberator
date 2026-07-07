@@ -9,6 +9,9 @@ type RequestOptions = {
 };
 
 const PAGE_LIMIT = 500;
+// Infinite-loop backstop: no real user has 5M items. Prevents a misbehaving
+// endpoint that never returns a short page from hanging/OOM-ing the tab.
+const MAX_PAGES = 10_000;
 
 const cacheWarning = { isWarned: false };
 
@@ -37,6 +40,10 @@ export async function request<T>(url: string, options: RequestOptions = { respon
             () => fetch(url, {
                 headers: {
                     'page-limit': String(PAGE_LIMIT),
+                    // TV Time's backend is winding down and throttles/blocks
+                    // requests missing its client identity headers.
+                    'App-Version': '2025082201',
+                    'Client-Version': '10.10.0',
                     ...authorizationHeader,
                     ...(options.headers || {}),
                 },
@@ -110,6 +117,11 @@ export async function paginatedRequest<T>(
             all.push(...objects);
             onPage?.(page, all.length);
             if (objects.length < PAGE_LIMIT) break;
+        }
+
+        if (page >= MAX_PAGES) {
+            console.warn(`--- Pagination stopped at ${MAX_PAGES} pages (safety cap). Results may be truncated.`);
+            break;
         }
 
         page++;

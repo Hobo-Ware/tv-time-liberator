@@ -1,11 +1,16 @@
 import { request, Resource } from '../http';
 import type { Season } from '../types/Season';
+import { mapPool } from '../utils/mapPool';
 import { normalizeWatchedAt } from '../utils/normalizeWatchedAt';
 import { ProgressCallback, ProgressReporter } from '../utils/ProgressReporter';
 import { fetchAllEpisodeWatches } from './episodeWatches';
 import type { ShowInfoResponse } from './models/ShowInfoResponse';
 import { getEpisodeRating } from './ratings';
 import { toIMDB } from './toIMDB';
+
+// Bounded fan-out for per-episode work (imdb + rating lookups). Serial awaits
+// here are what turned large libraries into multi-hour crawls.
+const EPISODE_CONCURRENCY = 12;
 
 type SeriesInfoOptions = {
     id: number;
@@ -18,6 +23,11 @@ type SeriesInfoOptions = {
      * reducing N serial HTTP calls to a single map lookup.
      */
     watchedAtMap?: Map<number, string | null>;
+    /**
+     * When false, per-episode rating lookups (one HTTP call each) are skipped.
+     * This is the expensive pass gated behind the popup's opt-in toggle.
+     */
+    includeEpisodeRatings?: boolean;
 };
 
 export async function getShowSeasons({
@@ -26,6 +36,7 @@ export async function getShowSeasons({
     imdbResolver = toIMDB,
     onProgress = () => { },
     watchedAtMap,
+    includeEpisodeRatings = false,
 }: SeriesInfoOptions): Promise<Season[]> {
     const url = Resource.Get.Shows.Info(id);
 
@@ -41,16 +52,12 @@ export async function getShowSeasons({
 
     const extended: Season[] = [];
     for (const season of seasons) {
-        const episodes: Season['episodes'] = [];
-
-        for (let j = 0; j < season.episodes.length; j++) {
-            const episode = season.episodes[j];
-
+        const episodes = await mapPool(season.episodes, EPISODE_CONCURRENCY, async (episode) => {
             const watched_at = resolvedWatchedAtMap
                 ? (resolvedWatchedAtMap.get(episode.id) ?? null)
                 : normalizeWatchedAt((await request<{ watched_date: string }>(Resource.Get.Episode.Info(episode.id))).watched_date);
 
-            const rating = userId != null
+            const rating = includeEpisodeRatings && userId != null
                 ? await getEpisodeRating(episode.id, userId)
                 : null;
 
@@ -68,8 +75,8 @@ export async function getShowSeasons({
 
             progress.increment(1);
             progress.report(`Season ${season.number} - Episode ${episode.number}`);
-            episodes.push(extendedEpisode);
-        }
+            return extendedEpisode;
+        });
 
         extended.push({
             number: season.number,
