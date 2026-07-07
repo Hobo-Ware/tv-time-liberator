@@ -1,3 +1,5 @@
+import { jwtDecode } from "jwt-decode";
+import createEta from "simple-eta";
 import {
     favoriteList,
     followedMovies,
@@ -28,10 +30,21 @@ function readUser(): { id: string; login: string; name: string } | null {
 }
 
 function readToken(): string {
-    return localStorage.getItem("flutter.jwtToken")?.slice(1, -1) ?? "";
+    const raw = localStorage.getItem("flutter.jwtToken");
+    // Stored JSON-quoted ("eyJ..."); strip quotes if present without
+    // corrupting an unquoted token.
+    return raw ? raw.replace(/^"|"$/g, "") : "";
 }
 
-const PHASE_COUNT = 4;
+// Work distribution across [movies, shows, favorites, lists]. Shows dominate
+// (per-episode work), so weighting the overall fraction by real cost - rather
+// than treating each phase as an equal 25% - is what keeps the ETA honest.
+const PHASE_WEIGHTS = [0.05, 0.80, 0.07, 0.08];
+const WEIGHT_BEFORE = PHASE_WEIGHTS.reduce<number[]>(
+    (acc, w, i) => [...acc, (acc[i] ?? 0) + w],
+    [0],
+);
+const PHASE_COUNT = PHASE_WEIGHTS.length;
 let extracting = false;
 
 let reportSnapshot: ProgressReport = {
@@ -45,8 +58,11 @@ let reportSnapshot: ProgressReport = {
 };
 emit(Topic.Progress, reportSnapshot);
 
-async function extract(format: 'zip' | 'files' = 'zip') {
-    const user = readUser()!;
+async function extract(format: 'zip' | 'files' = 'zip', includeEpisodeRatings = false) {
+    const user = readUser();
+    if (!user?.id && !user?.login) {
+        throw new Error('Could not read your TV Time profile. Refresh the page and try again.');
+    }
     setAuthorizationHeader(readToken());
     setCache(LocalStore);
 
@@ -55,34 +71,59 @@ async function extract(format: 'zip' | 'files' = 'zip') {
     // Each phase reports its own 0..1 fraction; map it into one continuous
     // 0..1 bar across all phases so progress never resets backward.
     let phaseIndex = 0;
+    // One estimator over the whole export (not per-phase), fed the work-weighted
+    // overall fraction so the ETA reflects total remaining work, not the current
+    // phase in isolation.
+    const eta = createEta({ min: 0, max: 1, historyTimeConstant: 20 });
     const config = {
         userId: user.id ?? user.login,
         imdbResolver,
+        includeEpisodeRatings,
         onProgress: (report: ProgressReport) => {
             const frac = Number.isFinite(report.value?.current) ? report.value.current : 0;
-            const overall = Math.min(1, (phaseIndex + frac) / PHASE_COUNT);
+            const overall = Math.min(
+                1,
+                (WEIGHT_BEFORE[phaseIndex] ?? 0) + (PHASE_WEIGHTS[phaseIndex] ?? 0) * frac,
+            );
+
+            eta.report(overall);
+            const seconds = eta.estimate();
+            // Suppress the estimate until there's real signal, so users never
+            // see an optimistic "a few seconds" during the fast opening phase.
+            const estimated = overall > 0.03 && Number.isFinite(seconds)
+                ? Math.round(seconds)
+                : Infinity;
+
             reportSnapshot = {
                 ...report,
                 value: { current: overall, previous: reportSnapshot.value?.current ?? 0 },
+                estimated,
             };
             emit(Topic.Progress, reportSnapshot);
         },
     };
 
-    const movies = await followedMovies(config); phaseIndex = 1;
-    const shows = await followedShows(config); phaseIndex = 2;
-    const favorites = await favoriteList(config); phaseIndex = 3;
+    // Serialize each dataset as soon as it lands, then drop the object graph
+    // so peak heap holds strings - not the full object trees + strings + zip
+    // all at once. The shows graph (seasons/episodes) is the heaviest, so
+    // freeing it before favorites/lists/zip is what keeps big libraries alive.
+    const files: Record<string, string> = {};
+
+    let movies = await followedMovies(config); phaseIndex = 1;
+    let shows = await followedShows(config); phaseIndex = 2;
+    files["movies.json"] = JSON.stringify(movies, null, 2);
+    files["shows.json"] = JSON.stringify(shows, null, 2);
+    files["activity_history.csv"] = toCsv({ movies, shows });
+    movies = [];
+    shows = [];
+
+    let favorites = await favoriteList(config); phaseIndex = 3;
+    files["favorites.json"] = JSON.stringify(favorites, null, 2);
+    files["favorites.csv"] = toCsv(favorites);
+    favorites = { name: '', description: '', is_public: true, movies: [], shows: [] };
+
     const lists = await myLists(config); phaseIndex = 4;
-
-    const files: Record<string, string> = {
-        "movies.json": JSON.stringify(movies, null, 2),
-        "shows.json": JSON.stringify(shows, null, 2),
-        "activity_history.csv": toCsv({ movies, shows }),
-        "favorites.json": JSON.stringify(favorites, null, 2),
-        "favorites.csv": toCsv(favorites),
-        "lists.json": JSON.stringify(lists, null, 2),
-    };
-
+    files["lists.json"] = JSON.stringify(lists, null, 2);
     for (const list of lists) {
         const listFilename = `list_${list.name.toLowerCase().replace(/ /g, "_")}.csv`;
         files[listFilename] = toCsv({ movies: list.movies, shows: list.shows });
@@ -98,11 +139,23 @@ async function extract(format: 'zip' | 'files' = 'zip') {
 }
 
 function isAuthorized(): boolean {
-    const user = readUser();
-    return !!user?.name && user.name !== "Anonymous";
+    // Gate on the JWT (what actually authorizes API calls), not the fragile
+    // user blob. TV Time changing the shape of `flutter.user` was locking
+    // logged-in users out behind a permanently greyed button.
+    const token = readToken();
+    if (!token) {
+        return false;
+    }
+
+    try {
+        const { exp } = jwtDecode<{ exp?: number }>(token);
+        return exp == null || exp * 1000 > Date.now();
+    } catch {
+        return false;
+    }
 }
 
-listener(Topic.Export, async ({ format }) => {
+listener(Topic.Export, async ({ format, includeEpisodeRatings }) => {
     // Guard against double-clicks: a second concurrent extraction doubles
     // memory + API load and crashed the tab in earlier versions.
     if (extracting) {
@@ -121,7 +174,7 @@ listener(Topic.Export, async ({ format }) => {
     emit(Topic.Progress, reportSnapshot);
 
     try {
-        await extract(format);
+        await extract(format, includeEpisodeRatings);
         reportSnapshot = {
             ...reportSnapshot,
             done: true,

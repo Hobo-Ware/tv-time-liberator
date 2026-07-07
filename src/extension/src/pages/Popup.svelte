@@ -13,6 +13,9 @@
   import { verifyAuthorization } from "../request/topic/verifyAuthorization";
 
   let exportFormat: ExportFormat = $state('zip');
+  // Off by default: episode ratings are a slow per-episode pass. Power users
+  // opt in; everyone else gets a fast export (watch history + movie ratings).
+  let includeEpisodeRatings = $state(false);
   // Optimistic disable: covers the brief window between click and the first
   // progress event so the button can't be double-triggered.
   let starting = $state(false);
@@ -66,6 +69,14 @@
   function openTvTime() {
     browser.tabs.create({ url: 'https://app.tvtime.com' });
   }
+
+  function formatEta(seconds: number): string {
+    if (seconds < 60) return `${seconds}s`;
+    if (seconds < 3600) return `${Math.ceil(seconds / 60)}m`;
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.round((seconds % 3600) / 60);
+    return `${hours}h ${minutes}m`;
+  }
 </script>
 
 <div class="app">
@@ -109,7 +120,7 @@
   {:else}
     <Button
       disabled={!$isAuthorized$ || $isLiberationInProgress$ || starting}
-      onclick={() => { starting = true; extract(exportFormat); }}
+      onclick={() => { starting = true; extract(exportFormat, includeEpisodeRatings); }}
     >
       {#if $isLiberationInProgress$}
         {@const pct = ($progress$?.value?.current ?? 0) * 100}
@@ -126,14 +137,20 @@
     </Button>
   {/if}
 
-  <div class="format-toggle" class:hidden={$isLiberationInProgress$ || $isDone$}>
-    <label class:active={exportFormat === 'zip'}>
-      <input type="radio" name="format" value="zip" bind:group={exportFormat} />
-      ZIP
-    </label>
-    <label class:active={exportFormat === 'files'}>
-      <input type="radio" name="format" value="files" bind:group={exportFormat} />
-      Files
+  <div class="options" class:hidden={$isLiberationInProgress$ || $isDone$}>
+    <div class="format-toggle">
+      <label class:active={exportFormat === 'zip'}>
+        <input type="radio" name="format" value="zip" bind:group={exportFormat} />
+        ZIP
+      </label>
+      <label class:active={exportFormat === 'files'}>
+        <input type="radio" name="format" value="files" bind:group={exportFormat} />
+        Files
+      </label>
+    </div>
+    <label class="ratings-toggle" title="Slower: fetches your star rating for every episode">
+      <input type="checkbox" bind:checked={includeEpisodeRatings} />
+      Include episode ratings <span class="hint">(slower)</span>
     </label>
   </div>
 
@@ -150,7 +167,7 @@
         {@const est = $progress$?.estimated ?? 0}
         <span class="eta">
           {#if Number.isFinite(est) && est > 0}
-            ETA {est}s
+            ETA {formatEta(est)}
           {:else}
             estimating...
           {/if}
@@ -339,7 +356,19 @@
     text-decoration: underline;
   }
 
-  /* ── Format toggle ── */
+  /* ── Options ── */
+  .options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .options.hidden {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
   .format-toggle {
     display: flex;
     gap: 6px;
@@ -347,9 +376,24 @@
     font-size: 11px;
   }
 
-  .format-toggle.hidden {
-    visibility: hidden;
-    pointer-events: none;
+  .ratings-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    font-size: 11px;
+    color: #999;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .ratings-toggle input {
+    accent-color: #00e6f6;
+    cursor: pointer;
+  }
+
+  .ratings-toggle .hint {
+    color: #555;
   }
 
   .format-toggle input {

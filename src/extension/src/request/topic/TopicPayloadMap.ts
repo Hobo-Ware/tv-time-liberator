@@ -5,7 +5,7 @@ import type { Topic } from '../topic/Topic';
 export type ExportFormat = 'zip' | 'files';
 
 export type TopicPayloadMap = {
-    [Topic.Export]: { format: ExportFormat };
+    [Topic.Export]: { format: ExportFormat; includeEpisodeRatings: boolean };
     [Topic.CheckAuthorization]: void;
     [Topic.IMDB]: DereferrerOptions;
     [Topic.Progress]: ProgressReport;
