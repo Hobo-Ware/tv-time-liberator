@@ -23,8 +23,7 @@
     }
   ],
   "permissions": [
-    "tabs",
-    "downloads"
+    "tabs"
   ],
   "{{chrome}}.action": {
     "default_popup": "src/popup.html"

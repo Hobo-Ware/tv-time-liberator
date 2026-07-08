@@ -4,5 +4,4 @@ export enum Topic {
     IMDB = 'imdb',
     Progress = 'progress',
     CurrentProgress = 'current-progress',
-    Download = 'download',
 }
