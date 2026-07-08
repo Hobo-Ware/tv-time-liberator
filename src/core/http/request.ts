@@ -96,10 +96,24 @@ export async function paginatedRequest<T>(
     const all: T[] = [];
     const seen = getKey ? new Set<unknown>() : null;
     let page = 1;
+    let previousFirstSignature: string | null = null;
 
     while (true) {
         const response = await request<{ data: { objects: T[] } }>(urlFactory(page));
         const objects = response?.data?.objects ?? [];
+
+        // Universal loop-stop: if the endpoint hands back the same page again
+        // (its first item is unchanged), pagination is not advancing. Bail out
+        // regardless of whether a dedup key was provided - a misbehaving
+        // account must never loop the tab into an out-of-memory crash.
+        const firstSignature = objects.length
+            ? (getKey ? String(getKey(objects[0])) : JSON.stringify(objects[0]))
+            : null;
+        if (firstSignature != null && firstSignature === previousFirstSignature) {
+            console.warn('--- Pagination stopped: endpoint returned a repeated page.');
+            break;
+        }
+        previousFirstSignature = firstSignature;
 
         if (seen) {
             const prevSize = seen.size;
