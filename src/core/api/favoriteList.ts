@@ -43,37 +43,46 @@ export async function favoriteList({
     const liberatedMovies: List['movies'] = [];
     for (const movie of favoriteMovie) {
         progress.report(movie.name);
-
-        const info = await getMovie({
-            id: movie.uuid,
-            userId,
-            imdbResolver,
-        });
-        liberatedMovies.push({
-            ...info,
-            added_at: movie.created_at,
-        });
         progress.increment(1);
+
+        try {
+            const info = await getMovie({
+                id: movie.uuid,
+                userId,
+                imdbResolver,
+            });
+            liberatedMovies.push({
+                ...info,
+                added_at: movie.created_at,
+            });
+        } catch (error) {
+            console.warn(`[Liberator] skipping favorite movie "${movie.name}"`, error);
+        }
     }
 
     const liberatedShows: List['shows'] = [];
     for (const show of favoriteShow) {
         progress.report(show.name);
-        const info = await getShow({
-            id: show.uuid,
-            userId,
-            imdbResolver,
-            includeEpisodeRatings,
-            onProgress: ({ value: { current, previous }, message }) => {
-                progress.increment(current - previous);
-                progress.report(`${show.name} - ${message}`);
-            },
-        });
 
-        liberatedShows.push({
-            ...info,
-            added_at: show.created_at,
-        });
+        try {
+            const info = await getShow({
+                id: show.uuid,
+                userId,
+                imdbResolver,
+                includeEpisodeRatings,
+                onProgress: ({ value: { current, previous }, message }) => {
+                    progress.increment(current - previous);
+                    progress.report(`${show.name} - ${message}`);
+                },
+            });
+
+            liberatedShows.push({
+                ...info,
+                added_at: show.created_at,
+            });
+        } catch (error) {
+            console.warn(`[Liberator] skipping favorite show "${show.name}"`, error);
+        }
     }
 
     progress.done('Favorites exported.');

@@ -55,40 +55,47 @@ export async function followedMovies({
     const liberatedMovies: Movie[] = [];
 
     for (const movie of movies) {
-        const title = movie.meta.name;
+        const title = movie.meta?.name ?? "Unknown";
         progress.report(title);
-
-        const tvdb = assertDefined(
-            movie
-                .meta
-                .external_sources
-                .find(source => source.source === 'tvdb'),
-            'TVDB identifier not found.',
-        )?.id;
-
-        const imdb = await imdbResolver({ id: parseInt(tvdb), type: 'movie' });
-
         progress.increment(MOVIE_INCREMENT);
-        progress.report(title);
 
-        const rating = await getMovieRating(movie.uuid, userId);
-        progress.increment(RATING_INCREMENT);
+        try {
+            const tvdb = assertDefined(
+                movie
+                    .meta
+                    .external_sources
+                    .find(source => source.source === 'tvdb'),
+                'TVDB identifier not found.',
+            )?.id;
 
-        const watch = watchedMap.get(String(movie.uuid));
+            const imdb = await imdbResolver({ id: parseInt(tvdb), type: 'movie' });
 
-        liberatedMovies.push({
-            id: {
-                tvdb: parseInt(tvdb),
-                imdb,
-            },
-            created_at: movie.created_at,
-            uuid: movie.uuid,
-            title,
-            watched_at: movie.watched_at,
-            is_watched: movie.watched_at != null || watch != null,
-            rewatch_count: watch?.rewatch_count ?? 0,
-            rating,
-        });
+            progress.report(title);
+
+            const rating = await getMovieRating(movie.uuid, userId);
+            progress.increment(RATING_INCREMENT);
+
+            const watch = watchedMap.get(String(movie.uuid));
+
+            liberatedMovies.push({
+                id: {
+                    tvdb: parseInt(tvdb),
+                    imdb,
+                },
+                created_at: movie.created_at,
+                uuid: movie.uuid,
+                title,
+                watched_at: movie.watched_at,
+                is_watched: movie.watched_at != null || watch != null,
+                rewatch_count: watch?.rewatch_count ?? 0,
+                rating,
+            });
+        } catch (error) {
+            // Skip a movie whose metadata is missing/broken rather than
+            // aborting the whole export.
+            console.warn(`[Liberator] skipping movie "${title}"`, error);
+            progress.increment(RATING_INCREMENT);
+        }
     }
 
     // Fetch detail for watch-only movies (bounded concurrency); the follows

@@ -54,37 +54,42 @@ export async function myLists({
         for (const item of list.items) {
             progress.report(item.title);
 
-            if (item.type === MediaType.Show) {
-                const info = await getShow({
-                    id: item.uuid,
-                    userId,
-                    imdbResolver,
-                    includeEpisodeRatings,
-                    onProgress: ({ value: { current, previous }, message }) => {
-                        progress.increment(current - previous);
-                        progress.report(message);
-                    },
-                });
+            try {
+                if (item.type === MediaType.Show) {
+                    const info = await getShow({
+                        id: item.uuid,
+                        userId,
+                        imdbResolver,
+                        includeEpisodeRatings,
+                        onProgress: ({ value: { current, previous }, message }) => {
+                            progress.increment(current - previous);
+                            progress.report(message);
+                        },
+                    });
 
-                shows.push({
-                    ...info,
-                    added_at: item.created_at
-                });
-            }
+                    shows.push({
+                        ...info,
+                        added_at: item.created_at
+                    });
+                }
 
-            if (item.type === MediaType.Movie) {
-                const info = await getMovie({
-                    id: item.uuid,
-                    userId,
-                    imdbResolver,
-                });
+                if (item.type === MediaType.Movie) {
+                    const info = await getMovie({
+                        id: item.uuid,
+                        userId,
+                        imdbResolver,
+                    });
 
-                movies.push({
-                    ...info,
-                    added_at: item.created_at
-                });
-                progress.increment(1);
-                progress.report(item.title);
+                    movies.push({
+                        ...info,
+                        added_at: item.created_at
+                    });
+                    progress.increment(1);
+                    progress.report(item.title);
+                }
+            } catch (error) {
+                // A broken list item shouldn't abort the export.
+                console.warn(`[Liberator] skipping list item "${item.title}"`, error);
             }
 
             progress.report(item.title);

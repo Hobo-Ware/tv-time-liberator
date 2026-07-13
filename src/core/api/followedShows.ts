@@ -1,6 +1,5 @@
 import { paginatedRequest, Resource } from "../http";
 import type { Show } from "../types/Show";
-import { assertDefined } from "../utils/assertDefined";
 import { type ProgressCallback, ProgressReporter } from "../utils/ProgressReporter";
 import { fetchAllEpisodeWatches } from "./episodeWatches";
 import { getShowSeasons } from "./getShowSeasons";
@@ -63,53 +62,59 @@ export async function followedShows({
     );
 
     for (const object of objects) {
-        const title = object.meta.name;
+        const title = object.meta?.name ?? "Unknown";
         progress.report(title);
-
-        const show: Show = {
-            uuid: object.uuid,
-            id: {
-                tvdb: object.meta.id,
-                imdb: await imdbResolver({
-                    id: object.meta.id,
-                    type: "show",
-                }),
-            },
-            seasons: [],
-            created_at: object.created_at,
-            title,
-            status: assertDefined(
-                object.filter.at(-1),
-                "Status not found.",
-            ) as Show["status"],
-        };
-
         progress.increment(SHOW_INCREMENT);
-        progress.report(title);
 
-        shows.push(show);
+        try {
+            shows.push({
+                uuid: object.uuid,
+                id: {
+                    tvdb: object.meta.id,
+                    imdb: await imdbResolver({
+                        id: object.meta.id,
+                        type: "show",
+                    }),
+                },
+                seasons: [],
+                created_at: object.created_at,
+                title,
+                status: (object.filter?.at(-1) ?? "unknown") as Show["status"],
+            });
+        } catch (error) {
+            // A single malformed / deleted show must not abort the whole export.
+            console.warn(`[Liberator] skipping show "${title}" metadata`, error);
+        }
     }
 
     const liberatedShows: Show[] = [];
     for (const show of shows) {
         progress.report(show.title);
 
-        const seasons = await getShowSeasons({
-            id: show.id.tvdb,
-            userId,
-            onProgress: ({ message, value: { previous, current } }) => {
-                progress.increment(SEASONS_INCREMENT * (current - previous));
-                progress.report(`${show.title} - ${message}`);
-            },
-            imdbResolver,
-            watchedAtMap,
-            includeEpisodeRatings,
-        });
+        try {
+            const seasons = await getShowSeasons({
+                id: show.id.tvdb,
+                userId,
+                onProgress: ({ message, value: { previous, current } }) => {
+                    progress.increment(SEASONS_INCREMENT * (current - previous));
+                    progress.report(`${show.title} - ${message}`);
+                },
+                imdbResolver,
+                watchedAtMap,
+                includeEpisodeRatings,
+            });
 
-        liberatedShows.push({
-            ...show,
-            seasons,
-        });
+            liberatedShows.push({
+                ...show,
+                seasons,
+            });
+        } catch (error) {
+            // Deleted / orphaned show whose detail endpoint fails: keep its
+            // metadata with no episodes rather than failing the entire export.
+            console.warn(`[Liberator] skipping seasons for "${show.title}"`, error);
+            progress.increment(SEASONS_INCREMENT);
+            liberatedShows.push({ ...show, seasons: [] });
+        }
     }
 
     progress.done("Shows exported.");
